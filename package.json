@@ -1,0 +1,27 @@
+{
+    "private": true,
+    "name": "@centrid/theia-installer-creator",
+    "version": "1.0.0",
+    "cnversion": "1.0.0",
+    "description": "Package for building/packaging a Apache theia project into an installer on different platforms",
+    "keywords": [
+        "theia",
+        "IDE",
+        "installer",
+        "electron-builder",
+        "platform-builder",
+        "packager",
+        "electron"
+    ],
+    "author": "Chido Warambwa <chidow@centridsol.tech>",
+    "homepage": "",
+    "contributors": [
+        {
+            "name": "",
+            "email": "",
+            "url": ""
+        }
+    ],
+    "license": "SEE LICENSE IN license.md",
+    "workspaces": ["installer-creator", "native-modules-prebuilds-creator"]
+}
