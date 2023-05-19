@@ -1,9 +1,13 @@
 - Assumes yo generated layout
-- requires docker for cross platform building
 - yarn
 - support for linux and windows
 
 
 Schame
 - platfroms
-- 
+
+
+
+Prebuild
+- Can change, location
+- node114 up, electron XY up (only)

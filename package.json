@@ -23,5 +23,5 @@
         }
     ],
     "license": "SEE LICENSE IN license.md",
-    "workspaces": ["installer-creator", "native-modules-prebuilds-creator"]
+    "workspaces": ["installer-creator", "native-modules-prebuilds-creator", "native-modules-prebuilds"]
 }
