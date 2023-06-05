@@ -15,6 +15,14 @@ export class Helpers{
         }
     }
 
+    static InstallDependencies(packageName:string, packagePath:string){
+        const result = spawnSync("yarn", ["install"], {stdio: "inherit", cwd: packagePath})
+        if (result.status != 0){
+            throw new Error(`An error occured trying to install dependencies for the package '${packageName}'. \n\nError message:- ${result.stderr.toString()}`)
+        }
+    }
+
+
     static GetCompressedPackage(outputFolder:string, packageName:string){
         const packagePath = fs.readdirSync(outputFolder).find((fName:string) => {
             const fullPath:string = path.join(outputFolder, fName)

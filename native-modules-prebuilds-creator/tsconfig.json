@@ -20,5 +20,5 @@
     "baseUrl": ".",
     "downlevelIteration": true,
   },
-  "include": ["src/*"]
+  "include": ["src/*", "./type.d.ts"]
 }

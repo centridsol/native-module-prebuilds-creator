@@ -4,6 +4,7 @@ import fs from "fs"
 import decompress from "decompress"
 import { Consts } from "../Utilities/Consts"
 import { Helpers } from "../Utilities/Helpers"
+import { IPackageItemsToProcess, IPackagePath } from "../IPrebuildsCreator"
 
 
 export class PackageFetcher{
@@ -14,26 +15,35 @@ export class PackageFetcher{
         console.log(`Using temp directory '${this.tempOutDir}'`)
     }
 
-    async Fetch(packageToProcess:string[]){
-        const packagePaths:any = {}
+    async Fetch(packageToProcess:IPackageItemsToProcess):Promise<IPackagePath>{
+        const packagePaths:IPackagePath = {}
 
-        for(const packageName of packageToProcess){
-            const packageSafeName = Helpers.MakeNameSafe(packageName)
+        for(const packageTP of Object.values(packageToProcess)){
+            const packageSafeName = Helpers.MakeNameSafe(packageTP.fullPackageName)
             const outputFolderPath:string = path.join(this.tempOutDir, packageSafeName)
 
-            if (this.CheckIfAlreadyFetched(outputFolderPath, packageName)){
-                console.log(`Package ${packageName} already fetched. Skipping refetching`)
+            if (this.CheckIfAlreadyFetched(outputFolderPath, packageTP.fullPackageName)){
+                console.log(`Package ${packageTP.fullPackageName} already fetched. Skipping refetching`)
             }
             else{
-                console.log(`Fetching ${packageName}...`)
+                console.log(`Fetching ${packageTP.fullPackageName}...`)
                 if (!fs.existsSync(outputFolderPath)){
                     fs.mkdirSync(outputFolderPath, {recursive: true})
                 }
-                Helpers.SpwanFetchPackage(packageName, outputFolderPath)
+                Helpers.SpwanFetchPackage(packageTP.fullPackageName, outputFolderPath)
             }
 
-            console.log(`Extracting ${packageName}...`)
-            packagePaths[packageName] = await this.ExtractPackage(outputFolderPath, packageName)
+            console.log(`Extracting ${packageTP.fullPackageName}...`)
+            const extractedPath:string = await this.ExtractPackage(outputFolderPath, packageTP.fullPackageName)
+
+            //TODO: Do repeat this if already there
+            // Also maybe use workspaces 
+            console.log(`Installing depencies for ${packageTP}`)
+            Helpers.InstallDependencies(packageTP.fullPackageName, extractedPath)
+
+            packageToProcess[packageTP.fullPackageName].SetSourcePath(extractedPath)
+
+            
         }
         
         return packagePaths

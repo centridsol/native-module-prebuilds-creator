@@ -1,5 +1,6 @@
 {
     "name": "@centrid/theia-installer-creator",
+    "type": "module",
     "version": "1.0.0",
     "cnversion": "1.0.0",
     "description": "Package for building/packaging a Apache theia project into an installer on different platforms",
