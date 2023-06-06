@@ -16,7 +16,7 @@ export type IPreBuildifyOptions = {
         target: string
     } | { abiVersion: string})[]
     // Should it ensure all target are compilied
-    strictTargets?: boolean // 'error', 'skip', 'force'
+    onUnsupportedTargets?: 'error' | 'skip' | 'force' 
     includePreReleaseTargets?: boolean
 
 } 

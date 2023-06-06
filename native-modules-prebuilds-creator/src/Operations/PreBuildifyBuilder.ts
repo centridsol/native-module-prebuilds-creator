@@ -106,15 +106,21 @@ export class Prebuilder{
                 JSON.stringify(this.packageToProcess.supportedTargetObj.supportedTargets)
             }`
             if (!isSupported){
-                if (this.packageToProcess.mergedPrebuildifyOptions.strictTargets !== false){
+                if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'error' ||
+                    !this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets ){
                     throw new Error(baseError)
                 }
-                else{
-                    console.warn(`${compileTarget}. Skipping as strictTargets is set to false`)
+                else if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'skip'){
+                    console.warn(`${JSON.stringify(compileTarget)}. Skipping as strictTargets is set to false`)
+                    return [isSupported, false]
+                }
+                else if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'force'){
+                    console.warn(`${JSON.stringify(compileTarget)}. Build might not complete`)
+                    return [isSupported, true]
                 }
             }
             
-            return isSupported
+            return [isSupported, true]
         }
 
         let updatedTargets:any = []
@@ -126,7 +132,7 @@ export class Prebuilder{
             for (const compileTarget of this.packageToProcess.mergedPrebuildifyOptions.targets){
             
                 if ((compileTarget as any)?.abiVersion ){
-                    if (isAbiVersionSupported(compileTarget, (compileTarget as any).abiVersion)){
+                    if (isAbiVersionSupported(compileTarget, (compileTarget as any).abiVersion)[1]){
                         for (const rTarget of this.availableNodeApiTarget.filter((t:Target) => t.abi === (compileTarget as any).abiVersion )){
                             updatedTargets.push(rTarget)
                         }
@@ -134,13 +140,16 @@ export class Prebuilder{
                     }
                 }
                 else if((compileTarget as any)?.runtime && (compileTarget as any)?.target){
-                    if (isAbiVersionSupported(compileTarget, nodeAbi.getAbi((compileTarget as any).target, (compileTarget as any).runtime))){
-                        updatedTargets.push(compileTarget)
+                    const abiVersion = nodeAbi.getAbi((compileTarget as any).target, (compileTarget as any).runtime)
+                    if (isAbiVersionSupported(compileTarget, abiVersion)[1]){
+                        for (const rTarget of this.availableNodeApiTarget.filter((t:Target) => t.abi === abiVersion )){
+                            updatedTargets.push(rTarget)
+                        }
                     }
                 }
             }
 
-            this.packageToProcess.mergedPrebuildifyOptions.targets = updatedTargets
+            this.packageToProcess.mergedPrebuildifyOptions.targets = [...new Set(updatedTargets)] as any
         }
         
     }

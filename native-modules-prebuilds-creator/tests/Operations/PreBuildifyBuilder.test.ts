@@ -22,11 +22,6 @@ describe("Prebuildify builder", () => {
     }
 
     const getSupportObjTargets = (nodeNodeAbi:string[], electronNodeAbi:string[]) => {
-        console.log(nodeAbi.supportedTargets.filter((t:Target) => {
-            return t.runtime === "electron"
-        }))
-        console.log([...new Set([...nodeNodeAbi, ...electronNodeAbi])].sort((a:string, b:string) => parseInt(a) - parseInt(b)))
-
         return {
             supportedTargets: { 
                 node: nodeAbi.supportedTargets.filter((t:Target) => {
@@ -64,8 +59,6 @@ describe("Prebuildify builder", () => {
             })
 
             expect(prebuilder.IsNativeModule()).toBeTruthy()
-
-
 
         })
 
@@ -148,16 +141,108 @@ describe("Prebuildify builder", () => {
         })
 
         describe("Can validate and update specifed targets", () =>{
-            it("Errors out when strictTargets is true, and target not supported", () =>{
-
+            it("Errors out when onUnsupportedTargets is 'error', and target not supported", () =>{
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        node: ">=16 < 21"
+                    }
+                }, {
+                     onUnsupportedTargets: 'error', 
+                     targets: [ 
+                        { 
+                            runtime: "node",
+                            target: "14.0.0"
+                        },
+                        {
+                            abiVersion: "108"
+                        }
+                    ]})
+            
+                prebuilder.SetSupportedTargetDetails()
+                expect(() => prebuilder.ValidateAndSetPackageTargets()).toThrowError()
             })
 
-            it("Remove specified target when strictTarget is false, and target not supported", () => {
+            it("Remove specified target when onUnsupportedTargets is 'skip', and target not supported", () => {
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        node: ">=16 < 21"
+                    }
+                }, {
+                     onUnsupportedTargets: 'skip', 
+                     includePreReleaseTargets : true, 
+                     targets: [ 
+                        { 
+                            runtime: "node",
+                            target: "14.0.0"
+                        },
+                        {
+                            abiVersion: "108"
+                        }
+                    ]})
 
+                prebuilder.SetSupportedTargetDetails()
+                prebuilder.ValidateAndSetPackageTargets()
+
+                expect(prebuilder["packageToProcess"].mergedPrebuildifyOptions.targets).toEqual([
+                    {"abi": "108", "lts": true, "runtime": "node", "target": "18.0.0"}
+                ])
             })
+
+            it("Remove specified target when onUnsupportedTargets is 'force', and target not supported", () => {
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        node: ">=16 < 21"
+                    }
+                }, {
+                     onUnsupportedTargets: 'force', 
+                     includePreReleaseTargets : true, 
+                     targets: [ 
+                        { 
+                            runtime: "node",
+                            target: "14.0.0"
+                        },
+                        {
+                            abiVersion: "108"
+                        }
+                    ]})
+
+                prebuilder.SetSupportedTargetDetails()
+                prebuilder.ValidateAndSetPackageTargets()
+
+                expect(prebuilder["packageToProcess"].mergedPrebuildifyOptions.targets).toEqual([
+                    {"abi": "83", "lts": false, "runtime": "node", "target": "14.0.0"},
+                    {"abi": "108", "lts": true, "runtime": "node", "target": "18.0.0"}
+                ])
+            })
+
 
             it("Converts all targets (including abi's) into target objects", () => {
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        node: ">=16 < 21"
+                    }
+                }, { includePreReleaseTargets : true, 
+                     targets: [ 
+                        { 
+                            runtime: "node",
+                            target: "16.0.0"
+                        },
+                        { 
+                            runtime: "node",
+                            target: "18.0.0"
+                        },
+                        {
+                            abiVersion: "108"
+                        }
+                    ]})
 
+                prebuilder.SetSupportedTargetDetails()
+                prebuilder.ValidateAndSetPackageTargets()
+
+                expect(prebuilder["packageToProcess"].mergedPrebuildifyOptions.targets).toEqual([
+                    {"abi": "93", "lts": false, "runtime": "node", "target": "16.0.0"}, 
+                    {"abi": "108", "lts": true, "runtime": "node", "target": "18.0.0"}
+                ])
             })
         })
     })
