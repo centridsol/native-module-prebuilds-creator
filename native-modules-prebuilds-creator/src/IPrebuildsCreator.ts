@@ -36,9 +36,11 @@ export interface IPackageItem {
     sourcePath:string
     prebuildPaths:string
     supportedTargetObj:ISupportedTargetObj
-    SetSourcePath(pathToSet:string):void
-    SetPrebuildPath(pathToSet:string):void
-    SetSupportedTargetObj(supportedTargetObj:ISupportedTargetObj):void
+    packageJson:any
+    SetSourcePath(pathToSet:string):IPackageItem
+    SetPrebuildPath(pathToSet:string):IPackageItem
+    SetSupportedTargetObj(supportedTargetObj:ISupportedTargetObj):IPackageItem
+    SetPackageJson(packageJson:any):IPackageItem
 }
 
 export type IPackageItemsToProcess = {[packageName:string]: IPackageItem}

@@ -39,6 +39,11 @@ export class PackageItem implements IPackageItem{
         return this._supportedTargetObj
     }
 
+    private _packageJson:any
+    get packageJson(): any{
+        return this._packageJson
+    }
+
 
     constructor(packageDetails:(IDetailedPackageToProcess | string), gloablPrebuildifyOpts:IPreBuildifyOptions){
         if (typeof packageDetails === "string"){
@@ -54,18 +59,25 @@ export class PackageItem implements IPackageItem{
         this._fullPackageName = this.packageVersion ? `${this.packageName}@${this.packageVersion}` : `${this.packageName}@lastest`
     }
     
-    SetSupportedTargetObj(supportedTargetObj: ISupportedTargetObj): void {
+    SetSupportedTargetObj(supportedTargetObj: ISupportedTargetObj) {
         this._supportedTargetObj = supportedTargetObj
+        return this
     }
 
     SetSourcePath(pathToSet:string){
         this._sourcePath = pathToSet
+        return this
     }
 
     SetPrebuildPath(pathToSet:string){
         this._prebuildPaths = pathToSet
+        return this
     }
     
+    SetPackageJson(packageJson:any){
+        this._packageJson = packageJson
+        return this
+    }
     
 }
 

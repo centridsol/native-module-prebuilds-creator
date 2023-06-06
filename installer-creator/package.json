@@ -36,6 +36,6 @@
     "dependencies": {
         "js-yaml": "^4.1.0",
         "npmlog": "^7.0.1",
-        "rimraf": "^5.0.0"
+        "rimraf": "^4.0.0"
     }
 }

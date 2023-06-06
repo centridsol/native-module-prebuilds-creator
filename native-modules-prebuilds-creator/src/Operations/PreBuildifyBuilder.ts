@@ -5,14 +5,12 @@ import isNative from 'is-native-module'
 import nodeAbi, { Target } from 'node-abi'
 import semver from 'semver'
 
-class Prebuilder{
-    private packageJson:any
+export class Prebuilder{
     private packageToProcess:IPackageItem
     private availableNodeApiTarget:any
 
     constructor(packageToProcess: IPackageItem){
         this.packageToProcess = packageToProcess
-        this.packageJson = require(path.join(packageToProcess.sourcePath, "package.json"))
         this.availableNodeApiTarget = nodeAbi.supportedTargets.slice(0)
     }
 
@@ -23,7 +21,7 @@ class Prebuilder{
     }
 
     IsNativeModule(){
-        if (!isNative(this.packageJson)){
+        if (!isNative(this.packageToProcess.packageJson)){
             // TODO
             console.error("The package ${packageName} does not seem to be a native module")
         }
@@ -44,14 +42,14 @@ class Prebuilder{
             supportedAbiVersions: null
         }
 
-
-        if (this.packageJson?.engine){
-            if (this.packageJson.engine?.node){
-                targetsObj.runtimeRestrictions.node = this.packageJson.engine.node
+        console.log(this.packageToProcess.packageJson)
+        if (this.packageToProcess.packageJson?.engines){
+            if (this.packageToProcess.packageJson.engines?.node){
+                targetsObj.runtimeRestrictions.node = this.packageToProcess.packageJson.engines.node
             }
 
-            if (this.packageJson.engine?.electron){
-                targetsObj.runtimeRestrictions.electron = this.packageJson.engine.electron
+            if (this.packageToProcess.packageJson.engines?.electron){
+                targetsObj.runtimeRestrictions.electron = this.packageToProcess.packageJson.engines.electron
             }
         }
 
@@ -59,21 +57,35 @@ class Prebuilder{
             targetsObj.supportedAbiVersions = []
 
             if (targetsObj.runtimeRestrictions.node){
-                targetsObj.supportedTargets.node = this.availableNodeApiTarget.filter((target:Target) => target.runtime === "node" ).map((target:Target) => {
-                    return semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.node))
-                })
+                targetsObj.supportedTargets.node = this.availableNodeApiTarget.filter((target:Target) => {
+                    return target.runtime === "node" &&  semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.node))
+                } )
+
                 targetsObj.supportedAbiVersions = (targetsObj.supportedTargets.node || []).map((target:any) => target.abi)
+
+                if (!targetsObj.runtimeRestrictions.electron){
+                    targetsObj.supportedTargets.electron = this.availableNodeApiTarget.filter((target:Target) => {
+                        return target.runtime === "electron" &&   targetsObj.supportedAbiVersions.includes(target.abi)
+                    } )
+                }
             }
 
-            // TODO: Vice-versa
-            if (targetsObj.runtimeRestrictions.electron || targetsObj.supportedTargets.node){
-                targetsObj.supportedTargets.electron = this.availableNodeApiTarget.filter((target:Target) => target.runtime === "electron" ).map((target:Target) => {
-                    return semver.satisfies(target.target , new semver.Range(targetsObj.runtimeRestrictions.electron)) || targetsObj.supportedAbiVersions.includes(target.abi)
-                })
+            if (targetsObj.runtimeRestrictions.electron){
+                targetsObj.supportedTargets.electron = this.availableNodeApiTarget.filter((target:Target) => {
+                    return target.runtime === "electron" &&  semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.electron))
+                } )
+
 
                 targetsObj.supportedAbiVersions = [...new Set([...targetsObj.supportedAbiVersions,
                                                                ...(targetsObj.supportedTargets.electron || []).map((target:Target) => target.abi)])]
+
+                if (!targetsObj.runtimeRestrictions.node){
+                    targetsObj.supportedTargets.node = this.availableNodeApiTarget.filter((target:Target) => {
+                        return target.runtime === "node" &&   targetsObj.supportedAbiVersions.includes(target.abi)
+                    } )
+                }
             } 
+
         }
         else{
             targetsObj.supportedAbiVersions = this.availableNodeApiTarget.map((target:any) => target.abi)
