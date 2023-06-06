@@ -25,7 +25,7 @@ export class TestMockObjectHelper{
             arch: os.arch(),
             platform: os.platform(),
             targets: [],
-            ...override
+            ...(override || {})
         }
     }
 }

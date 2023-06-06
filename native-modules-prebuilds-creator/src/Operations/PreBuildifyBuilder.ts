@@ -22,8 +22,8 @@ export class Prebuilder{
 
     IsNativeModule(){
         if (!isNative(this.packageToProcess.packageJson)){
-            // TODO
-            console.error("The package ${packageName} does not seem to be a native module")
+            console.warn(`The package ${this.packageToProcess.fullPackageName} does not seem to be a native module. Might not build successfully`)
+            return false
         }
         return true
     }
@@ -42,7 +42,6 @@ export class Prebuilder{
             supportedAbiVersions: null
         }
 
-        console.log(this.packageToProcess.packageJson)
         if (this.packageToProcess.packageJson?.engines){
             if (this.packageToProcess.packageJson.engines?.node){
                 targetsObj.runtimeRestrictions.node = this.packageToProcess.packageJson.engines.node
@@ -58,7 +57,8 @@ export class Prebuilder{
 
             if (targetsObj.runtimeRestrictions.node){
                 targetsObj.supportedTargets.node = this.availableNodeApiTarget.filter((target:Target) => {
-                    return target.runtime === "node" &&  semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.node))
+                    return target.runtime === "node" &&  
+                    semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.node), { includePrerelease: this.packageToProcess.mergedPrebuildifyOptions.includePreReleaseTargets || false})
                 } )
 
                 targetsObj.supportedAbiVersions = (targetsObj.supportedTargets.node || []).map((target:any) => target.abi)
@@ -72,7 +72,8 @@ export class Prebuilder{
 
             if (targetsObj.runtimeRestrictions.electron){
                 targetsObj.supportedTargets.electron = this.availableNodeApiTarget.filter((target:Target) => {
-                    return target.runtime === "electron" &&  semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.electron))
+                    return target.runtime === "electron" &&  
+                    semver.satisfies(target.target, new semver.Range(targetsObj.runtimeRestrictions.electron), { includePrerelease: this.packageToProcess.mergedPrebuildifyOptions.includePreReleaseTargets || false})
                 } )
 
 
@@ -88,11 +89,12 @@ export class Prebuilder{
 
         }
         else{
-            targetsObj.supportedAbiVersions = this.availableNodeApiTarget.map((target:any) => target.abi)
+            targetsObj.supportedAbiVersions = [...new Set(this.availableNodeApiTarget.map((target:any) => target.abi))] as string[]
             targetsObj.supportedTargets.electron = this.availableNodeApiTarget.filter((target:Target) => target.runtime === "electron" )
             targetsObj.supportedTargets.node = this.availableNodeApiTarget.filter((target:Target) => target.runtime === "node" )
         }
 
+        targetsObj.supportedAbiVersions.sort((a:string, b:string) => parseInt(a) - parseInt(b))
         this.packageToProcess.SetSupportedTargetObj(targetsObj)
 
     }

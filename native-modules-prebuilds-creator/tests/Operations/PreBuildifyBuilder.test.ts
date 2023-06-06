@@ -6,6 +6,7 @@ import { AvailableMockObjects } from "../Test.Utilities/MockObjects/MockObjectRe
 import path from "path"
 import fsExtra from "fs-extra"
 import { IPackageItem } from "../../src/IPrebuildsCreator"
+import nodeAbi, { Target } from 'node-abi'
 
 describe("Prebuildify builder", () => {
 
@@ -17,7 +18,26 @@ describe("Prebuildify builder", () => {
         return new PackageItem( {
             packageName: packageJson.name,
             version: packageJson.version
-        }, gloablPrebuildifyOpts ? gloablPrebuildifyOpts : TestMockObjectHelper.GetMockPrebuildifyProps()).SetPackageJson(packageJson)
+        }, TestMockObjectHelper.GetMockPrebuildifyProps(gloablPrebuildifyOpts)).SetPackageJson(packageJson)
+    }
+
+    const getSupportObjTargets = (nodeNodeAbi:string[], electronNodeAbi:string[]) => {
+        console.log(nodeAbi.supportedTargets.filter((t:Target) => {
+            return t.runtime === "electron"
+        }))
+        console.log([...new Set([...nodeNodeAbi, ...electronNodeAbi])].sort((a:string, b:string) => parseInt(a) - parseInt(b)))
+
+        return {
+            supportedTargets: { 
+                node: nodeAbi.supportedTargets.filter((t:Target) => {
+                    return nodeNodeAbi.includes(t.abi) && t.runtime === "node"
+                }), 
+                electron: nodeAbi.supportedTargets.filter((t:Target) => {
+                    return electronNodeAbi.includes(t.abi) && t.runtime === "electron"
+                })
+            },
+            supportedAbiVersions: [...new Set([...nodeNodeAbi, ...electronNodeAbi])].sort((a:string, b:string) => parseInt(a) - parseInt(b))
+        }
     }
 
     describe("Prebuilder tests", ()=>{
@@ -25,35 +45,106 @@ describe("Prebuildify builder", () => {
             return new Prebuilder(getPackageItemFromNativeModule(nativeModuleId, additionalPackageJson, gloablPrebuildifyOpts))
         }
 
-        beforeAll(() => {
-            
-        })
         it("Can check if native", () => {
-            
+            let prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                engines: {
+                    node: ">=16 < 19"
+                }
+            })
+
+            expect(prebuilder.IsNativeModule()).toBeFalsy()
+
+            prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                engines: {
+                    node: ">=16 < 19"
+                },
+                dependencies: {
+                    "bindings": "^1.5.0",
+                }
+            })
+
+            expect(prebuilder.IsNativeModule()).toBeTruthy()
+
+
+
         })
 
         describe("Can get all supoorted targets", () => {
             it("When node engine specified", () => {
-
-            })
-
-            it("When electron engine specified", () => {
                 const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
                     engines: {
                         node: ">=16 < 19"
                     }
                 })
                 prebuilder.SetSupportedTargetDetails()
-                console.log(prebuilder["packageToProcess"].supportedTargetObj)
+                expect(prebuilder["packageToProcess"].supportedTargetObj).toEqual({
+                    runtimeRestrictions: { node: '>=16 < 19', electron: null },
+                    ...getSupportObjTargets([ '93', '102', '108' ], [])
+                })
+            })
+
+            it("When electron engine specified", () => {
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        electron: ">=14 < 22"
+                    }
+                })
+                prebuilder.SetSupportedTargetDetails()
+                expect(prebuilder["packageToProcess"].supportedTargetObj).toEqual({
+                    runtimeRestrictions: { node: null, electron: '>=14 < 22', },
+                    ...getSupportObjTargets( [] , [ '97' ])
+                })
             })
 
             it("When no engine restrictions specified", () => {
-                // const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative)
-                // prebuilder.SetSupportedTargetDetails()
-                // console.log(prebuilder["packageToProcess"].supportedTargetObj)
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative)
+                prebuilder.SetSupportedTargetDetails()
+                expect(prebuilder["packageToProcess"].supportedTargetObj).toEqual({
+                    runtimeRestrictions: { node: null, electron: null },
+                    ...getSupportObjTargets([
+                        '47',  '48',  '51',  '57',
+                        '59',  '64',  '67',  '72',
+                        '79',  '83',  '88',  '93',
+                        '102', '108', '111', '115'
+                      ], [
+                        '47',  '48',  '49',  '50',  '51',
+                        '53',  '54',  '57',  '57',  '64',
+                        '64',  '69',  '70',  '73',  '75',
+                        '76',  '76',  '80',  '82',  '82',
+                        '85',  '87',  '89',  '89',  '89',
+                        '97',  '98',  '99',  '101', '103',
+                        '106', '107', '109', '110', '113',
+                        '114', '116'
+                      ])
+                })
             })
 
-            it("unions", () => {})
+            it("Return correct support for electron and node engine specified", () => {
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        electron: ">=14 < 22",
+                        node: ">=16 < 19"
+                    }
+                })
+                prebuilder.SetSupportedTargetDetails()
+                expect(prebuilder["packageToProcess"].supportedTargetObj).toEqual({
+                    runtimeRestrictions: { node:  ">=16 < 19", electron: '>=14 < 22', },
+                    ...getSupportObjTargets( ['93', '102', '108'] , [ '97' ])
+                })
+            })
+
+            it("Return correct abi version when include prerelease specified", () => {
+                const prebuilder:Prebuilder = getPrebuilderInstance(AvailableMockObjects.SimpleNative, {
+                    engines: {
+                        electron: ">=16 < 22"
+                    }
+                }, { includePreReleaseTargets : true})
+                prebuilder.SetSupportedTargetDetails()
+                expect(prebuilder["packageToProcess"].supportedTargetObj).toEqual({
+                    runtimeRestrictions: { node: null, electron: '>=16 < 22', },
+                    ...getSupportObjTargets( [] , [ '99', '101', '103', '106', '107', '109'])
+                })
+            })
         })
 
         describe("Can validate and update specifed targets", () =>{
