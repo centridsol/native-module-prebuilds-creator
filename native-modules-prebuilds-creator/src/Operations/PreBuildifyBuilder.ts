@@ -1,9 +1,10 @@
 import { IPackageItem, IPackageItemsToProcess, IPackagePath, IPreBuildifyOptions, ISupportedTargetObj}  from "../IPrebuildsCreator"
 import preBuildify from "prebuildify"
-import path from 'path'
 import isNative from 'is-native-module'
 import nodeAbi, { Target } from 'node-abi'
 import semver from 'semver'
+import path from 'path'
+import fs from 'fs'
 
 export class Prebuilder{
     private packageToProcess:IPackageItem
@@ -154,7 +155,6 @@ export class Prebuilder{
         
     }
 
-    
 }
 export class PreBuildifyBuilder{
 
@@ -175,10 +175,25 @@ export class PreBuildifyBuilder{
     async Prebuildifier(packageToProcess: IPackageItem){
         console.log(`Build native module: ${packageToProcess.fullPackageName}`)
         return new Promise((resolve:any, reject:any) => {
-
             try{
-                // TODO: Work on resolve
-                preBuildify({...packageToProcess.mergedPrebuildifyOptions, cwd: packageToProcess.sourcePath}, resolve)
+                preBuildify({...packageToProcess.mergedPrebuildifyOptions,
+                                out: packageToProcess.sourcePath,
+                                cwd: packageToProcess.sourcePath}, (err:any) => {
+                    if (err){
+                        reject(err)
+                    }
+                    else{
+                        const prebuildsPath = path.join(packageToProcess.sourcePath, "prebuilds")
+                        if (!fs.existsSync(prebuildsPath)){
+                            reject("Even though the build completed successfully, cannot seem to find 'prebuild' folder")
+                        }
+                        else{
+                            packageToProcess.SetPrebuildPath(prebuildsPath)
+                            resolve()
+                        }
+
+                    }
+                })
             }
             catch(err:any){
                 reject(err)

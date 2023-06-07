@@ -5,20 +5,21 @@ import { TestMockObjectHelper } from "../Test.Utilities/Helper"
 import { AvailableMockObjects } from "../Test.Utilities/MockObjects/MockObjectRegister"
 import path from "path"
 import fsExtra from "fs-extra"
-import { IPackageItem } from "../../src/IPrebuildsCreator"
+import { IPackageItem, IPackageItemsToProcess, IPreBuildifyOptions } from "../../src/IPrebuildsCreator"
 import nodeAbi, { Target } from 'node-abi'
+import { TestHelper } from "../../../testUtils/Helper"
 
 describe("Prebuildify builder", () => {
 
-    const getPackageItemFromNativeModule  = (nativeModuleId:string, additionalPackageJson:any={},  gloablPrebuildifyOpts:any=null) => {
-        const outPath = TestMockObjectHelper.CreateMockNativeModule(nativeModuleId, additionalPackageJson)
+    const getPackageItemFromNativeModule  = (nativeModuleId:string, additionalPackageJson:any={},  gloablPrebuildifyOpts:any=null, outFolder:any=null) => {
+        const outPath = TestMockObjectHelper.CreateMockNativeModule(nativeModuleId, additionalPackageJson, outFolder)
 
         const packageJson:any =  JSON.parse(fsExtra.readFileSync(path.join(outPath, "package.json")).toString()) 
         
         return new PackageItem( {
             packageName: packageJson.name,
             version: packageJson.version
-        }, TestMockObjectHelper.GetMockPrebuildifyProps(gloablPrebuildifyOpts)).SetPackageJson(packageJson)
+        }, TestMockObjectHelper.GetMockPrebuildifyProps(gloablPrebuildifyOpts)).SetSourcePath(outPath).SetPackageJson(packageJson)
     }
 
     const getSupportObjTargets = (nodeNodeAbi:string[], electronNodeAbi:string[]) => {
@@ -34,6 +35,27 @@ describe("Prebuildify builder", () => {
             supportedAbiVersions: [...new Set([...nodeNodeAbi, ...electronNodeAbi])].sort((a:string, b:string) => parseInt(a) - parseInt(b))
         }
     }
+
+    const assertBuilt = (packageItem:IPackageItem, packageId:string, targetInfo:string[]) => {
+  
+        expect(packageItem.prebuildPaths.includes("prebuilds")).toBeTruthy()
+        expect(fsExtra.existsSync(packageItem.prebuildPaths)).toBeTruthy()
+
+        const archPrebuiltPath:string = path.join(packageItem.prebuildPaths, 
+            `${packageItem.mergedPrebuildifyOptions.platform}-${packageItem.mergedPrebuildifyOptions.arch}`)
+
+        expect(fsExtra.existsSync(archPrebuiltPath)).toBeTruthy()
+        
+        for(const tI of targetInfo){
+            const nodeAddOnePath = path.join(archPrebuiltPath, `${tI}.node`)
+            expect(fsExtra.existsSync(nodeAddOnePath)).toBeTruthy()
+            expect(require(nodeAddOnePath).GetName()).toEqual(packageId)
+        }
+    }
+
+    beforeEach(()=>{
+        TestHelper.CleanUpTempDir("")
+    })
 
     describe("Prebuilder tests", ()=>{
         const getPrebuilderInstance = (nativeModuleId:string, additionalPackageJson:any={},  gloablPrebuildifyOpts:any=null) => {
@@ -246,25 +268,122 @@ describe("Prebuildify builder", () => {
             })
         })
     })
-    // it("Can build native modules", async () => {
-    //     //let packagePaths:any = await (new PackageFetcher()).Fetch(["drivelist"])
 
-    //     let packagePaths:any = {
-    //         ["drivelist"]: {
-    //             packagePath: "/tmp/nm-prebuilds-creator/drivelist/package/",
-    //             nativeBuildPaths: null
-    //         }
-    //     }
+    describe("Can build native modules using prebuildify", () => {
+       
+        it("Can do a single tagert build", async () => {
+            const napi_target =  nodeAbi.supportedTargets.slice(-1)[0]
+            const packageItem = getPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
+                {},  
+                {targets: [
+                    napi_target
+                ]}, 
+                AvailableMockObjects.SimpleNative)
 
-    //     packagePaths = await (new PreBuildifyBuilder(packagePaths)).BuildAll({
-    //         arch: "x64",
-    //         platform: "linux",
-    //         // @ts-ignore
-    //         //napi: true,
-    //         targets: ["node@20.0.0", "node@16.0.0", "node@14.0.0"]
-    //     })
+            await new PreBuildifyBuilder({}).Prebuildifier(packageItem)
+            assertBuilt(packageItem, AvailableMockObjects.SimpleNative, [`${napi_target?.runtime}.abi${napi_target?.abi}`])
+        }, 20000)
 
-        
-    //}, 
-   // 60000)
+
+        it ("Can do a muiltple tagert build", async () => {
+            const napi_target =  nodeAbi.supportedTargets.slice(-10)
+            const packageItem = getPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
+                {},  
+                {
+                    targets: napi_target
+                }, 
+                AvailableMockObjects.SimpleNative)
+
+            await new PreBuildifyBuilder({}).Prebuildifier(packageItem)
+            assertBuilt(packageItem, AvailableMockObjects.SimpleNative, napi_target.map((t:Target) => `${t.runtime}.abi${t.abi}`))
+        }, 60000)
+
+
+        it ("Can handle build errors", async () => {
+            const napi_target =  nodeAbi.supportedTargets.slice(-1)[0]
+            const packageItem = getPackageItemFromNativeModule(AvailableMockObjects.BrokenNative, 
+                {},  
+                {targets: [
+                    napi_target
+                ]}, 
+                AvailableMockObjects.BrokenNative)
+
+                try{
+                    await new PreBuildifyBuilder({}).Prebuildifier(packageItem)
+                    expect(true).toBeFalsy()
+                }
+                catch(err:any){
+                    expect(err.message.includes("node-gyp exited with 1")).toBeTruthy()
+                    expect(true).toBeTruthy()
+                }
+                
+        })
+    })
+
+    describe("Full tests", () => {
+        const sampleTargets:any[] = [...nodeAbi.supportedTargets.filter((t:Target) => t.runtime === "node").slice(-2),
+                                    ...nodeAbi.supportedTargets.filter((t:Target) => t.runtime === "electron").slice(-2)]
+        const createSampleNativeModule = (nativeModules: {id: string, prebuildifyOpt:IPreBuildifyOptions}[]) => {
+
+            let packageItems:IPackageItemsToProcess = {}
+            for (const nativeModule of nativeModules){
+                packageItems[nativeModule.id] = getPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
+                    {
+                        dependencies: {
+                            "bindings": "^1.5.0",
+                        }
+                    },  
+                    { 
+                        targets: sampleTargets, 
+                        ...nativeModule.prebuildifyOpt
+                    }, 
+                    nativeModule.id)
+            }
+            return packageItems
+        }
+
+        it("Can build multiple native packages", async () => {
+            const nativeModules:any = [...Array(7).keys()].map((n:any, index:number) => {
+                return  {id: `SimpleModule${index+1}`, prebuildifyOpt:{}}
+            })
+
+            let packageItems:IPackageItemsToProcess = createSampleNativeModule(nativeModules)
+            await new PreBuildifyBuilder(packageItems).BuildAll()
+
+            const sampleTargetAsStrings:string[] = sampleTargets.map((t:Target) => `${t.runtime}.abi${t.abi}`)
+
+            for (const [id, packageItem] of Object.entries(packageItems)){
+                assertBuilt(packageItem, id, sampleTargetAsStrings)
+            }
+           
+        }, 60000)
+
+        it("Can build multiple native packagaes with different prebuildify settings", async () => {
+            const nativeModules:any = [
+                {id: "NativeModule1", prebuildifyOpt:{
+                    targets: [sampleTargets[0], sampleTargets[2]]
+                }},
+                {id: "NativeModule2", prebuildifyOpt:{
+                    targets: [sampleTargets[0]] 
+                }},
+            ];
+
+            let packageItems:IPackageItemsToProcess = createSampleNativeModule(nativeModules)
+            await new PreBuildifyBuilder(packageItems).BuildAll()
+            
+            let i = 0
+            for (const [id, packageItem] of Object.entries(packageItems)){
+
+                const prebuildFolder:string = path.join(packageItem.prebuildPaths, 
+                                                        `${packageItem.mergedPrebuildifyOptions.platform}-${packageItem.mergedPrebuildifyOptions.arch}`)
+
+                const expectedTargets = nativeModules[i].prebuildifyOpt.targets.map((t:Target) => `${t.runtime}.abi${t.abi}`)
+                expect(fsExtra.readdirSync(prebuildFolder).sort()).toEqual(expectedTargets.map((f:string) => `${f}.node`).sort())
+                assertBuilt(packageItem, id, expectedTargets)
+                i++
+            }
+            
+        })
+    })
+    
 })
