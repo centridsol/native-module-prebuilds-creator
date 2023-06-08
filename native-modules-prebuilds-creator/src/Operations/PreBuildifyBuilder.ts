@@ -1,4 +1,4 @@
-import { IPackageItem, IPackageItemsToProcess, IPackagePath, IPreBuildifyOptions, ISupportedTargetObj}  from "../IPrebuildsCreator"
+import { IPackageItem, IPackageItemsToProcess, ISupportedTargetObj}  from "../IPrebuildsCreator"
 import preBuildify from "prebuildify"
 import isNative from 'is-native-module'
 import nodeAbi, { Target } from 'node-abi'

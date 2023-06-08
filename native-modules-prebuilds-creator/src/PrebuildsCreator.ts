@@ -1,5 +1,5 @@
 
-import { IDetailedPackageToProcess, IPackageItem, IPackageItemsToProcess, IPackagePath, IPackagesToProcess, IPreBuildifyOptions } from "./IPrebuildsCreator"
+import { IPackageItemsToProcess, IPackagesToProcess, IPreBuildifyOptions } from "./IPrebuildsCreator"
 import { PackageFetcher } from "./Operations/PackageFetcher"
 import { PreBuildifyBuilder } from "./Operations/PreBuildifyBuilder"
 import { PackageItem } from "./PackageItem"
@@ -18,14 +18,15 @@ export class PrebuildsCreator{
     LoadPackagesToProcess(packageToProcess:IPackagesToProcess){
         for (const packageDetails of packageToProcess){
             const packageDetailsCls = new PackageItem(packageDetails, this.gloablPrebuildifyOpts)
-            this.packagesToProcess[packageDetailsCls.packageName] = packageDetailsCls
+            this.packagesToProcess[`${packageDetailsCls.packageName}@${packageDetailsCls.packageFetchVersion}`] = packageDetailsCls
         }
     }
 
 
     async Create(){
-    await new PackageFetcher().Fetch(this.packagesToProcess)
-       await new PreBuildifyBuilder(this.packagesToProcess).BuildAll()
+        await new PackageFetcher().Fetch(this.packagesToProcess)
+        await new PreBuildifyBuilder(this.packagesToProcess).BuildAll()
+        //new PreBuildsCopier(this.packagesToProcess).Copy(this.distFolder)
 
     }
 }

@@ -1,5 +1,5 @@
-import { IDetailedPackageToProcess, IPackageItem, IPreBuildifyOptions, ISupportedTargetObj } from "./IPrebuildsCreator"
-
+import { IDetailedPackageToProcess, IFetchedPackageDetails, IPackageItem, IPreBuildifyOptions, ISupportedTargetObj } from "./IPrebuildsCreator"
+import path from "path"
 
 export class PackageItem implements IPackageItem{
 
@@ -17,6 +17,22 @@ export class PackageItem implements IPackageItem{
     get packageVersion(): string{
         return this._packageVersion
     }
+
+    private _tarballName:string
+    get tarballName(): string{
+        return this._tarballName
+    }
+
+    private _tarballUrl:string
+    get tarballUrl(): string{
+        return this._tarballUrl
+    }
+
+    private _packageFetchVersion:string
+    get packageFetchVersion(): string{
+        return this._packageFetchVersion
+    }
+    
 
     private _mergedPrebuildifyOptions:IPreBuildifyOptions
     get mergedPrebuildifyOptions(): IPreBuildifyOptions{
@@ -47,16 +63,24 @@ export class PackageItem implements IPackageItem{
 
     constructor(packageDetails:(IDetailedPackageToProcess | string), gloablPrebuildifyOpts:IPreBuildifyOptions){
         if (typeof packageDetails === "string"){
-            this._packageName = packageDetails
+            if (packageDetails.includes("@")){
+                const packageDetailsInfo = packageDetails.split("@")
+                this._packageName = packageDetailsInfo[0]
+                this._packageFetchVersion = packageDetailsInfo[1]
+            }
+            else{
+                this._packageName = packageDetails
+                this._packageFetchVersion = "latest"
+            }
             this._mergedPrebuildifyOptions = gloablPrebuildifyOpts
         }
         else{
             const packagedDetailsObj = packageDetails as IDetailedPackageToProcess
             this._packageName = packagedDetailsObj.packageName
-            this._packageVersion = packageDetails.version || null
+            this._packageFetchVersion = packageDetails.version || "latest"
             this._mergedPrebuildifyOptions = {...gloablPrebuildifyOpts, ...(packagedDetailsObj.prebuildifyProps || {})}
         }
-        this._fullPackageName = this.packageVersion ? `${this.packageName}@${this.packageVersion}` : `${this.packageName}@lastest`
+        
     }
     
     SetSupportedTargetObj(supportedTargetObj: ISupportedTargetObj) {
@@ -74,10 +98,19 @@ export class PackageItem implements IPackageItem{
         return this
     }
     
+    SetOtherPackageDetails(viewPackageDetails: IFetchedPackageDetails){
+        this._fullPackageName = viewPackageDetails.id
+        this._packageVersion = viewPackageDetails.version
+        this._tarballUrl = viewPackageDetails.tarball_url
+        this._tarballName = path.basename(viewPackageDetails.tarball_url)
+        return this
+    }
+
     SetPackageJson(packageJson:any){
         this._packageJson = packageJson
         return this
     }
+
     
 }
 

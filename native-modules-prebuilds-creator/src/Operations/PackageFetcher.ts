@@ -1,67 +1,80 @@
 import os from "os"
 import path from "path"
-import fs from "fs"
+import fsExtra from "fs-extra"
 import decompress from "decompress"
 import { Consts } from "../Utilities/Consts"
 import { Helpers } from "../Utilities/Helpers"
-import { IPackageItemsToProcess, IPackagePath } from "../IPrebuildsCreator"
+import { IPackageItem, IPackageItemsToProcess } from "../IPrebuildsCreator"
 
 
 export class PackageFetcher{
     private tempOutDir:string
-
+    private tempDowloadFolder:string
+    private tempExtractFolder:string
+    private tempNodeModules:string
+    
     constructor(){
         this.tempOutDir = path.join(os.tmpdir(), Consts.TEMP_DIR_NAME)
+        this.tempDowloadFolder = path.join(this.tempOutDir, "download")
+        this.tempExtractFolder = path.join(this.tempOutDir, "extract")
+
+        this.tempNodeModules = path.join(this.tempExtractFolder, "node_modules")
+        if (!fsExtra.existsSync(this.tempNodeModules)){
+            fsExtra.mkdirSync(this.tempNodeModules, {recursive: true})
+        }
+
         console.log(`Using temp directory '${this.tempOutDir}'`)
     }
 
-    async Fetch(packageToProcess:IPackageItemsToProcess):Promise<IPackagePath>{
-        const packagePaths:IPackagePath = {}
+    async Fetch(packageToProcess:IPackageItemsToProcess){
 
         for(const packageTP of Object.values(packageToProcess)){
-            const packageSafeName = Helpers.MakeNameSafe(packageTP.fullPackageName)
-            const outputFolderPath:string = path.join(this.tempOutDir, packageSafeName)
+            packageTP.SetOtherPackageDetails(Helpers.GetPackageDetails(packageTP))
+            
+            const downloadFolderPath:string = path.join(this.tempDowloadFolder, Helpers.MakeNameSafe(packageTP.fullPackageName))
 
-            if (this.CheckIfAlreadyFetched(outputFolderPath, packageTP.fullPackageName)){
+            if (this.CheckIfAlreadyFetched(downloadFolderPath, packageTP)){
                 console.log(`Package ${packageTP.fullPackageName} already fetched. Skipping refetching`)
             }
             else{
                 console.log(`Fetching ${packageTP.fullPackageName}...`)
-                if (!fs.existsSync(outputFolderPath)){
-                    fs.mkdirSync(outputFolderPath, {recursive: true})
+                if (!fsExtra.existsSync(downloadFolderPath)){
+                    fsExtra.mkdirSync(downloadFolderPath, {recursive: true})
                 }
-                Helpers.SpwanFetchPackage(packageTP.fullPackageName, outputFolderPath)
+                Helpers.SpwanFetchPackage(packageTP.fullPackageName, downloadFolderPath)
             }
 
             console.log(`Extracting ${packageTP.fullPackageName}...`)
-            const extractedPath:string = await this.ExtractPackage(outputFolderPath, packageTP.fullPackageName)
+            const extractedPath:string = await this.ExtractPackage(downloadFolderPath, packageTP)
 
-            //TODO: Do repeat this if already there
-            // Also maybe use workspaces 
-            console.log(`Installing depencies for ${packageTP}`)
+            console.log(`Installing depencies for ${packageTP.fullPackageName}`)
             Helpers.InstallDependencies(packageTP.fullPackageName, extractedPath)
 
-            packageToProcess[packageTP.fullPackageName].SetSourcePath(extractedPath)
+            packageTP.SetSourcePath(extractedPath)
 
-            
         }
         
-        return packagePaths
     }
 
-    private CheckIfAlreadyFetched(outputFolder:string, packageName:string){
-        if (!fs.existsSync(outputFolder)){
+    private CheckIfAlreadyFetched(outputFolder:string, packageItem:IPackageItem){
+        const downloadPath:string = path.join(outputFolder, packageItem.tarballName)
+        if (!fsExtra.existsSync(downloadPath)){
             return false
         }
-
-        return Helpers.GetCompressedPackage(outputFolder, packageName)
+        return downloadPath
     }
 
-    private async ExtractPackage(outputFolder:string, packageName:string){
+    private async ExtractPackage(downloadFolderPath:string, packageItem:IPackageItem){
 
-        const pathToExtract:string = Helpers.GetCompressedPackage(outputFolder, packageName)
-        await decompress(pathToExtract, outputFolder)
+        const pathToExtract:string = path.join(downloadFolderPath, packageItem.tarballName)
+        await decompress(pathToExtract, downloadFolderPath)
 
-        return path.join(outputFolder, "package")
+        const extractedOutPath:string = path.join(this.tempExtractFolder, Helpers.MakeNameSafe(packageItem.fullPackageName))
+        fsExtra.moveSync(path.join(downloadFolderPath, "package"), extractedOutPath, {overwrite: true})
+
+        const packageNodeModule:string = path.join(extractedOutPath, "node_modules")
+        fsExtra.symlinkSync(this.tempNodeModules, packageNodeModule )
+
+        return extractedOutPath
     }
 }

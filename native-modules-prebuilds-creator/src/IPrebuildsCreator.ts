@@ -1,12 +1,6 @@
 import { Target } from "node-abi"
 
 
-export type IPackagePath = {
-    [packageAndVersion:string]: {
-        packagePath: string
-        nativeBuildPaths: string
-    }
-}
 export type IPreBuildifyOptions = {
     arch: string,
     platform: string,
@@ -29,8 +23,16 @@ export type IDetailedPackageToProcess = {
 
 export type IPackagesToProcess = (IDetailedPackageToProcess | string)[]
 
+export type IFetchedPackageDetails = {
+    tarball_url: string,
+    id:string,
+    version: string
+}
 export interface IPackageItem {
+    tarballName:string
+    tarballUrl:string
     packageName:string
+    packageFetchVersion:string
     fullPackageName:string
     packageVersion:string
     mergedPrebuildifyOptions:IPreBuildifyOptions
@@ -42,6 +44,7 @@ export interface IPackageItem {
     SetPrebuildPath(pathToSet:string):IPackageItem
     SetSupportedTargetObj(supportedTargetObj:ISupportedTargetObj):IPackageItem
     SetPackageJson(packageJson:any):IPackageItem
+    SetOtherPackageDetails(packageDetails: IFetchedPackageDetails):IPackageItem
 }
 
 export type IPackageItemsToProcess = {[packageName:string]: IPackageItem}

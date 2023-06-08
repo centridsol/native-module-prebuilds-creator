@@ -1,5 +1,4 @@
 import { PackageItem } from  "../../src/PackageItem"
-import { PackageFetcher } from "../../src/Operations/PackageFetcher"
 import { PreBuildifyBuilder, Prebuilder } from "../../src/Operations/PreBuildifyBuilder"
 import { TestMockObjectHelper } from "../Test.Utilities/Helper"
 import { AvailableMockObjects } from "../Test.Utilities/MockObjects/MockObjectRegister"
@@ -334,6 +333,7 @@ describe("Prebuildify builder", () => {
                         }
                     },  
                     { 
+                        // @ts-ignore
                         targets: sampleTargets, 
                         ...nativeModule.prebuildifyOpt
                     }, 
