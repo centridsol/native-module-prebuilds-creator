@@ -4,6 +4,9 @@ import path from "path"
 
 export class PreBuildsCopier{
 
+    static PREBUILD_MANIFEST_FILENAME = "prebuild-manifest.json"
+    static PACTCHER_FILENAME = "prebuild-patcher.js"
+
     private packagesToCopy:IPackageItemsToProcess 
     private manifetsDetails:any 
 
@@ -34,15 +37,13 @@ export class PreBuildsCopier{
                 fsExtra.mkdirSync(outputPath, {recursive: true})
             }
             fsExtra.copySync(packageItem.prebuildPaths, outputPath)
-            this.UpdatePrebuildManifest(packageItem, outputPath)
+            this.UpdatePrebuildManifest(packageItem, path.relative(distFolder, outputPath))
         }
 
-        fsExtra.writeFileSync(path.join(distFolder, `prebuild-manifest.json`), JSON.stringify(this.manifetsDetails, null, 4) )
-        fsExtra.writeFileSync(path.join(distFolder, `prebuild-patcher.js`), JSON.stringify(this.manifetsDetails, null, 4) )
+        fsExtra.writeFileSync(path.join(distFolder, PreBuildsCopier.PREBUILD_MANIFEST_FILENAME), JSON.stringify(this.manifetsDetails, null, 4) )
+        fsExtra.writeFileSync(path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME), JSON.stringify(this.manifetsDetails, null, 4) )
     }
 
-    //patch (), patch-auto {node_modules_folder}
-    // opt node_modules
 
 }
 

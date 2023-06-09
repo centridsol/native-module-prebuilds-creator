@@ -10,17 +10,6 @@ import { TestHelper } from "../../../testUtils/Helper"
 
 describe("Prebuildify builder", () => {
 
-    const getPackageItemFromNativeModule  = (nativeModuleId:string, additionalPackageJson:any={},  gloablPrebuildifyOpts:any=null, outFolder:any=null) => {
-        const outPath = TestMockObjectHelper.CreateMockNativeModule(nativeModuleId, additionalPackageJson, outFolder)
-
-        const packageJson:any =  JSON.parse(fsExtra.readFileSync(path.join(outPath, "package.json")).toString()) 
-        
-        return new PackageItem( {
-            packageName: packageJson.name,
-            version: packageJson.version
-        }, TestMockObjectHelper.GetMockPrebuildifyProps(gloablPrebuildifyOpts)).SetSourcePath(outPath).SetPackageJson(packageJson)
-    }
-
     const getSupportObjTargets = (nodeNodeAbi:string[], electronNodeAbi:string[]) => {
         return {
             supportedTargets: { 
@@ -58,7 +47,7 @@ describe("Prebuildify builder", () => {
 
     describe("Prebuilder tests", ()=>{
         const getPrebuilderInstance = (nativeModuleId:string, additionalPackageJson:any={},  gloablPrebuildifyOpts:any=null) => {
-            return new Prebuilder(getPackageItemFromNativeModule(nativeModuleId, additionalPackageJson, gloablPrebuildifyOpts))
+            return new Prebuilder(TestMockObjectHelper.GetPackageItemFromNativeModule(nativeModuleId, additionalPackageJson, gloablPrebuildifyOpts))
         }
 
         it("Can check if native", () => {
@@ -272,7 +261,7 @@ describe("Prebuildify builder", () => {
        
         it("Can do a single tagert build", async () => {
             const napi_target =  nodeAbi.supportedTargets.slice(-1)[0]
-            const packageItem = getPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
+            const packageItem = TestMockObjectHelper.GetPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
                 {},  
                 {targets: [
                     napi_target
@@ -286,7 +275,7 @@ describe("Prebuildify builder", () => {
 
         it ("Can do a muiltple tagert build", async () => {
             const napi_target =  nodeAbi.supportedTargets.slice(-10)
-            const packageItem = getPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
+            const packageItem = TestMockObjectHelper.GetPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
                 {},  
                 {
                     targets: napi_target
@@ -300,7 +289,7 @@ describe("Prebuildify builder", () => {
 
         it ("Can handle build errors", async () => {
             const napi_target =  nodeAbi.supportedTargets.slice(-1)[0]
-            const packageItem = getPackageItemFromNativeModule(AvailableMockObjects.BrokenNative, 
+            const packageItem = TestMockObjectHelper.GetPackageItemFromNativeModule(AvailableMockObjects.BrokenNative, 
                 {},  
                 {targets: [
                     napi_target
@@ -326,7 +315,7 @@ describe("Prebuildify builder", () => {
 
             let packageItems:IPackageItemsToProcess = {}
             for (const nativeModule of nativeModules){
-                packageItems[nativeModule.id] = getPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
+                packageItems[nativeModule.id] = TestMockObjectHelper.GetPackageItemFromNativeModule(AvailableMockObjects.SimpleNative, 
                     {
                         dependencies: {
                             "bindings": "^1.5.0",

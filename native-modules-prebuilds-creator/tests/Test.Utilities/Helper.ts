@@ -4,6 +4,7 @@ import { MockObjectRegister } from "./MockObjects/MockObjectRegister"
 import { TestHelper } from "../../../testUtils/Helper"
 import os from "os"
 import path from "path"
+import { PackageItem } from "../../src/PackageItem"
 
 
 export class TestMockObjectHelper{
@@ -30,5 +31,23 @@ export class TestMockObjectHelper{
             targets: [],
             ...(override || {})
         }
+    }
+
+    static GetPackageItemFromNativeModule(nativeModuleId:string, additionalPackageJson:any={},  gloablPrebuildifyOpts:any=null, outFolder:any=null){
+        const outPath = TestMockObjectHelper.CreateMockNativeModule(nativeModuleId, additionalPackageJson, outFolder)
+
+        const packageJson:any =  JSON.parse(fsExtra.readFileSync(path.join(outPath, "package.json")).toString()) 
+        
+        return new PackageItem( {
+            packageName: packageJson.name,
+            version: packageJson.version
+        }, TestMockObjectHelper.GetMockPrebuildifyProps(gloablPrebuildifyOpts))
+                                .SetSourcePath(outPath)
+                                .SetOtherPackageDetails({
+                                    tarball_url: "",
+                                    id:`${packageJson.name}@${packageJson.version}`,
+                                    version: packageJson.version
+                                })
+                                .SetPackageJson(packageJson)
     }
 }
