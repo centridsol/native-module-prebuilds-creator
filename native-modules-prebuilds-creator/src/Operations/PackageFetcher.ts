@@ -51,6 +51,7 @@ export class PackageFetcher{
             Helpers.InstallDependencies(packageTP.fullPackageName, extractedPath)
 
             packageTP.SetSourcePath(extractedPath)
+            packageTP.SetPackageJson(JSON.parse(fsExtra.readFileSync(path.join(extractedPath, "package.json")).toString()))
 
         }
         
