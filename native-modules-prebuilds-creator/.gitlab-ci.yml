@@ -19,7 +19,7 @@ test:
   stage: test
   script: 
   - yarn -W
-  - yarn run tests
+  - yarn -W run tests
 
 build:
   stage: build
