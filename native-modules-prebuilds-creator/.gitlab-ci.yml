@@ -18,7 +18,7 @@ prepare:
 test:
   stage: test
   script: 
-  - yarn
+  - yarn -W
   - yarn run tests
 
 build:
