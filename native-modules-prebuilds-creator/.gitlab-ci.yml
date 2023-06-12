@@ -23,6 +23,7 @@ prepare:
 test:
   stage: test
   script: 
+  - !reference [.install_cendevops, script]
   - yarn run test
   needs: 
   - job: prepare
