@@ -23,11 +23,14 @@ test:
   stage: test
   script: 
   - yarn
-  - yarn run tests
+  - yarn run test
 
 build:
   stage: build
   extends: .base_npm_build
+  needs: 
+  - job: test
+    artifacts: true
   script:
     - !reference [.base_npm_build, script]
     - yarn run build
