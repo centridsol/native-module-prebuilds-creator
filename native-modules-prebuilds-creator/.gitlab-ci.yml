@@ -1,3 +1,7 @@
+before_script:
+- cd native-modules-prebuilds-creator
+
+
 include:
 - project: centrid/packagerepositry
   ref: master
@@ -18,8 +22,8 @@ prepare:
 test:
   stage: test
   script: 
-  - yarn -W
-  - yarn -W run tests
+  - yarn
+  - yarn run tests
 
 build:
   stage: build
