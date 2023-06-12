@@ -1,0 +1,3 @@
+trigger_job:
+  trigger:
+    project: native-modules-prebuilds-creator

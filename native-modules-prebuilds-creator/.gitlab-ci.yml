@@ -1,0 +1,45 @@
+include:
+- project: centrid/packagerepositry
+  ref: master
+  file: GitlabCIScripts/centrid-npm-ci.yml
+
+
+stages:
+- prepare
+- test
+- build
+- release
+- package
+
+prepare:
+  stage: prepare
+  extends: .base_npm_prepare
+
+test:
+  stage: test
+  script: 
+  - yarn
+  - yarn run tests
+
+build:
+  stage: build
+  extends: .base_npm_build
+  script:
+    - !reference [.base_php_build, script]
+    - yarn run build
+
+# release:
+#   stage: release
+#   script:
+#   - !reference [.base_npm_release-prepare, script]
+#   - !reference [.base_release-upload, script]
+#   when: manual
+
+# package:
+#   stage: package
+#   extends: .base_npm_package
+#   variables:
+#     DEPLOY_TO_SELF_HOST: true
+#     DEPLOY_TO_NPM: false
+#     DEPLOY_PATH: ./dist
+#   when: manual
