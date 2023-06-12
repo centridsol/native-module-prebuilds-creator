@@ -41,7 +41,7 @@ export class PreBuildsCopier{
         }
 
         fsExtra.writeFileSync(path.join(distFolder, PreBuildsCopier.PREBUILD_MANIFEST_FILENAME), JSON.stringify(this.manifetsDetails, null, 4) )
-        fsExtra.writeFileSync(path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME), JSON.stringify(this.manifetsDetails, null, 4) )
+        fsExtra.copyFileSync(path.join(__dirname, "prebuild-patcher.js"), path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME))
     }
 
 
