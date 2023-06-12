@@ -13,7 +13,8 @@ stages:
 - test
 - build
 - release
-- package
+- deploy-to-self-host
+- deploy-to-npm
 
 prepare:
   stage: prepare
@@ -22,9 +23,7 @@ prepare:
 test:
   stage: test
   script: 
-  # - yarn
-  # - yarn run test
-  - echo test
+  - yarn run test
   needs: 
   - job: prepare
     artifacts: true
@@ -44,6 +43,13 @@ build:
   script:
     - !reference [.base_npm_build, script]
     - yarn run build
+  artifacts:
+    paths: 
+    - dist/
+    - node_modules/
+    - .npmrc
+    - .accesstoken
+    - ${PROJECT_TYPE_CONFIG_FILE}
 
 # release:
 #   stage: release
@@ -52,11 +58,27 @@ build:
 #   - !reference [.base_release-upload, script]
 #   when: manual
 
-# package:
-#   stage: package
-#   extends: .base_npm_package
-#   variables:
-#     DEPLOY_TO_SELF_HOST: true
-#     DEPLOY_TO_NPM: false
-#     DEPLOY_PATH: ./dist
-#   when: manual
+deploy-to-self-host:
+  stage: deploy-to-self-host
+  extends: .base_npm_package
+  needs: 
+  - job: build
+    artifacts: true
+  variables:
+    DEPLOY_TO_SELF_HOST: true
+    DEPLOY_TO_NPM: false
+    PATH_TO_USE: ./dist
+  when: manual
+
+
+deploy-to-npm:
+  stage: deploy-to-npm
+  extends: .base_npm_package
+  needs: 
+  - job: build
+    artifacts: true
+  variables:
+    DEPLOY_TO_SELF_HOST: false
+    DEPLOY_TO_NPM: true
+    PATH_TO_USE: ./dist
+  when: manual
