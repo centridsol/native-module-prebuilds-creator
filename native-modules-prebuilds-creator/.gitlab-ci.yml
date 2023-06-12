@@ -65,8 +65,8 @@ deploy-to-self-host:
   - job: build
     artifacts: true
   variables:
-    DEPLOY_TO_SELF_HOST: true
-    DEPLOY_TO_NPM: false
+    DEPLOY_TO_SELF_HOST: "true"
+    DEPLOY_TO_NPM: "false"
     PATH_TO_USE: ./dist
   when: manual
 
@@ -78,7 +78,7 @@ deploy-to-npm:
   - job: build
     artifacts: true
   variables:
-    DEPLOY_TO_SELF_HOST: false
-    DEPLOY_TO_NPM: true
+    DEPLOY_TO_SELF_HOST: "false"
+    DEPLOY_TO_NPM: "true"
     PATH_TO_USE: ./dist
   when: manual
