@@ -24,6 +24,15 @@ test:
   script: 
   - yarn
   - yarn run test
+  needs: 
+  - job: prepare
+    artifacts: true
+  artifacts:
+    paths: 
+    - node_modules/
+    - .npmrc
+    - .accesstoken
+    - ${PROJECT_TYPE_CONFIG_FILE}
 
 build:
   stage: build
