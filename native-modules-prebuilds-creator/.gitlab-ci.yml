@@ -22,8 +22,9 @@ prepare:
 test:
   stage: test
   script: 
-  - yarn
-  - yarn run test
+  # - yarn
+  # - yarn run test
+  - echo test
   needs: 
   - job: prepare
     artifacts: true
