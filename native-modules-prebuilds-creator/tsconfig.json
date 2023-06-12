@@ -16,9 +16,10 @@
     "strictNullChecks": false,
     "rootDir": "src",
     "noUnusedLocals": false,
-    "sourceMap": true,
+    "sourceMap": false,
     "baseUrl": ".",
     "downlevelIteration": true,
+    "outDir": "./dist"
   },
   "include": ["src/*", "./type.d.ts"]
 }
