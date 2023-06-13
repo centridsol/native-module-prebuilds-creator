@@ -34,6 +34,7 @@ test:
   stage: test
   script: 
   - ls -l
+  - ls -la ../node_modules/@centrid/
   - > 
     echo -e "@centrid:registry=https://gitlab.com/api/v4/projects/$CENTRID_PACKAGE_REPO_PROJ_ID/packages/npm/\n//gitlab.com/api/v4/projects/$CENTRID_PACKAGE_REPO_PROJ_ID/packages/npm/:_authToken=$CENTRID_ACCESS_TOKEN" >> .npmrc
   - >
