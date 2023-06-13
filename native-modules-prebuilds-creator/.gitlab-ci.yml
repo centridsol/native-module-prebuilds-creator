@@ -31,19 +31,8 @@ prepare:
 test:
   stage: test
   script: 
-  - ls -l
-  - ls -la ../node_modules/@centrid/
-  - > 
-    echo -e "@centrid:registry=https://gitlab.com/api/v4/projects/$CENTRID_PACKAGE_REPO_PROJ_ID/packages/npm/\n//gitlab.com/api/v4/projects/$CENTRID_PACKAGE_REPO_PROJ_ID/packages/npm/:_authToken=$CENTRID_ACCESS_TOKEN" >> .npmrc
-  - >
-    echo "{ \"host\": \"https://gitlab.com\", \"token\": \"${CENTRID_ACCESS_TOKEN}\", \"user\": \"${CENTRID_USERNAME}\", \"projectId\": \"${CENTRID_PACKAGE_REPO_PROJ_ID}\", \"packageTypeLimit\": 10 }" > .accesstoken
-  - yarn 
-  - yarn add -D @centrid/cendevops
-  - ls -la node_modules/.bin
-  - ls -la ../node_modules/@centrid/
   - !reference [.install_cendevops, script]
-  # - yarn run test
-  - echo test
+  - yarn run test
   needs: 
   - job: prepare
     artifacts: true
