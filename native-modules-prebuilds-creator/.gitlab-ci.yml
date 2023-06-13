@@ -19,6 +19,16 @@ stages:
 prepare:
   stage: prepare
   extends: .base_npm_prepare
+  artifacts:
+    paths: 
+    - node_modules/
+    - native-modules-prebuilds-creator/.npmrc
+    - native-modules-prebuilds-creator/.accesstoken
+    - native-modules-prebuilds-creator/${CN_PROJECT_FILE}
+    - native-modules-prebuilds-creator/${PROJECT_TYPE_CONFIG_FILE}
+    expire_in: 30 mins
+    reports:
+      dotenv: native-modules-prebuilds-creator/build.env
 
 test:
   stage: test
