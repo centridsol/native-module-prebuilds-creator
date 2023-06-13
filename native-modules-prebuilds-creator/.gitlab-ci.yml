@@ -52,12 +52,15 @@ build:
     - .accesstoken
     - ${PROJECT_TYPE_CONFIG_FILE}
 
-# release:
-#   stage: release
-#   script:
-#   - !reference [.base_npm_release-prepare, script]
-#   - !reference [.base_release-upload, script]
-#   when: manual
+release:
+  stage: release
+  needs: 
+  - job: build
+    artifacts: true
+  script:
+  - !reference [.base_npm_release-prepare, script]
+  - !reference [.base_release-upload, script]
+  when: manual
 
 deploy-to-self-host:
   stage: deploy-to-self-host
@@ -65,6 +68,7 @@ deploy-to-self-host:
   needs: 
   - job: build
     artifacts: true
+  - job: release
   variables:
     DEPLOY_TO_SELF_HOST: "true"
     DEPLOY_TO_NPM: "false"
@@ -78,6 +82,7 @@ deploy-to-npm:
   needs: 
   - job: build
     artifacts: true
+  - job: release
   variables:
     DEPLOY_TO_SELF_HOST: "false"
     DEPLOY_TO_NPM: "true"
