@@ -33,6 +33,8 @@ prepare:
 test:
   stage: test
   script: 
+  - ls -l
+  - ls -la node_modules/.bin
   - !reference [.install_cendevops, script]
   # - yarn run test
   - echo test
