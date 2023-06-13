@@ -24,8 +24,6 @@ prepare:
     - node_modules/
     - native-modules-prebuilds-creator/.npmrc
     - native-modules-prebuilds-creator/.accesstoken
-    - native-modules-prebuilds-creator/${CN_PROJECT_FILE}
-    - native-modules-prebuilds-creator/${PROJECT_TYPE_CONFIG_FILE}
     expire_in: 30 mins
     reports:
       dotenv: native-modules-prebuilds-creator/build.env
@@ -40,7 +38,7 @@ test:
   - >
     echo "{ \"host\": \"https://gitlab.com\", \"token\": \"${CENTRID_ACCESS_TOKEN}\", \"user\": \"${CENTRID_USERNAME}\", \"projectId\": \"${CENTRID_PACKAGE_REPO_PROJ_ID}\", \"packageTypeLimit\": 10 }" > .accesstoken
   - yarn 
-  - yarn add @centrid/cendevops
+  - yarn add -D @centrid/cendevops
   - ls -la node_modules/.bin
   - ls -la ../node_modules/@centrid/
   - !reference [.install_cendevops, script]
