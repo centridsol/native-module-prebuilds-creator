@@ -1,11 +1,12 @@
 {
     "name": "@centrid/native-modules-prebuilds-creator",
     "version": "1.0.0",
-    "cnversion": "1.0.0",
+    "cnversion": "1.0.0.212146721",
     "description": "Wrapper for Prebuildfy, allowing you to create prebuild native modules for multiple of packages at the same time",
     "keywords": [
         "prebuildfy",
         "packages",
+        "installer",
         "native-modules"
     ],
     "author": "Chido Warambwa <chidow@centridsol.tech>",
