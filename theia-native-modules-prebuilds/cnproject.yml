@@ -1,0 +1,44 @@
+projectNamespace: centrid
+projectName: theia-native-modules-prebuilds
+description: >-
+  Project containing prebuilds of theia native node modules
+descriptionTags:
+  - packages
+  - thiea
+  - native-modules
+  - prebuilds
+projectUrl: ''
+license:
+  filePath: license.md
+  type: ''
+authors:
+  - name: ''
+    email: ''
+    url: ''
+company: ''
+versionInfo:
+  major:
+    versionNumber: 1
+    vesionDescription: ''
+    requires: {}
+    knownIssues: []
+  minor:
+    versionNumber: 37
+    featureList: []
+  patch:
+    versionNumber: 1
+    bugList: []
+  commitHash:
+    versionNumber: ''
+projectPaths:
+  src: src
+  tests: tests
+next:
+  releaseDescription: ''
+  features: []
+  bugFixes: []
+  improvements: []
+  documentation: []
+  knownIssues: []
+packageable: true
+artificateName: Centrid-theia-native-modules-prebuilds
