@@ -1,5 +1,6 @@
 {
     "name": "@centrid/native-modules-prebuilds-creator",
+    "main": "src/PrebuildsCreator",
     "version": "1.0.0",
     "cnversion": "1.0.0.55149148",
     "description": "Wrapper for Prebuildfy, allowing you to create prebuild native modules for multiple of packages at the same time",
@@ -23,12 +24,12 @@
         "decompress": "^4.2.1",
         "fs-extra": "^11.1.1",
         "is-native-module": "^1.1.3",
+        "lodash": "^4.17.21",
         "node-abi": "^3.43.0",
         "prebuildify": "^5.0.1",
         "rimraf": "^4.0.0",
         "sanitize-filename": "^1.6.3",
-        "semver": "^7.5.1",
-        "ts-jest": "^29.1.0"
+        "semver": "^7.5.1"
     },
     "devDependencies": {
         "@babel/cli": "^7.21.5",
@@ -38,10 +39,13 @@
         "@types/decompress": "^4.2.4",
         "@types/fs-extra": "^11.0.1",
         "@types/jest": "^29.5.1",
+        "@types/lodash": "^4.14.195",
         "@types/node-abi": "^3.0.0",
         "@types/semver": "^7.5.0",
         "jest": "^29.5.0",
-        "typescript": "4.9.5"
+        "ts-jest": "^29.1.0",
+        "typescript": "4.9.5",
+        "node-gyp": "^9.0.0"
     },
     "scripts": {
         "test": "jest --runInBand",

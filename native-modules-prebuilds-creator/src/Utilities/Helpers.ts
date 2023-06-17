@@ -2,7 +2,7 @@ import { spawnSync } from "child_process";
 import fs from "fs"
 import path from "path"
 import sanitize from "sanitize-filename"
-import { IFetchedPackageDetails, IPackageItem } from "src/IPrebuildsCreator";
+import { IFetchedPackageDetails, IPackageItem } from "../IPrebuildsCreator";
 
 export class Helpers{
     static MakeNameSafe(name:string){
@@ -17,7 +17,7 @@ export class Helpers{
     }
 
     static InstallDependencies(packageName:string, packagePath:string){
-        const result = spawnSync("yarn", ["install"], {stdio: "inherit", cwd: packagePath})
+        const result = spawnSync("yarn", ["install", "--ignore-scripts"], {stdio: "inherit", cwd: packagePath})
         if (result.status != 0){
             throw new Error(`An error occured trying to install dependencies for the package '${packageName}'. \n\nError message:- ${result.stderr.toString()}`)
         }

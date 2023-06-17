@@ -1,3 +1,4 @@
+import lodash from "lodash"
 import { IDetailedPackageToProcess, IFetchedPackageDetails, IPackageItem, IPreBuildifyOptions, ISupportedTargetObj } from "./IPrebuildsCreator"
 import path from "path"
 
@@ -72,13 +73,13 @@ export class PackageItem implements IPackageItem{
                 this._packageName = packageDetails
                 this._packageFetchVersion = "latest"
             }
-            this._mergedPrebuildifyOptions = gloablPrebuildifyOpts
+            this._mergedPrebuildifyOptions = lodash.cloneDeep(gloablPrebuildifyOpts)
         }
         else{
             const packagedDetailsObj = packageDetails as IDetailedPackageToProcess
             this._packageName = packagedDetailsObj.packageName
             this._packageFetchVersion = packageDetails.version || "latest"
-            this._mergedPrebuildifyOptions = {...gloablPrebuildifyOpts, ...(packagedDetailsObj.prebuildifyProps || {})}
+            this._mergedPrebuildifyOptions = {...lodash.cloneDeep(gloablPrebuildifyOpts), ...(packagedDetailsObj.prebuildifyProps || {})}
         }
         
     }

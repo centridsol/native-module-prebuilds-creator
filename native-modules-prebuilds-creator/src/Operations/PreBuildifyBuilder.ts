@@ -112,7 +112,7 @@ export class Prebuilder{
                     throw new Error(baseError)
                 }
                 else if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'skip'){
-                    console.warn(`${JSON.stringify(compileTarget)}. Skipping as strictTargets is set to false`)
+                    console.warn(`${JSON.stringify(compileTarget)}. Skipping as onUnsupportedTargets is set to 'skip'`)
                     return [isSupported, false]
                 }
                 else if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'force'){
@@ -127,14 +127,17 @@ export class Prebuilder{
         let updatedTargets:any = []
         if (this.packageToProcess.mergedPrebuildifyOptions.targets.length === 0){
             updatedTargets = [...this.packageToProcess.supportedTargetObj.supportedTargets.electron,
-                              ...this.packageToProcess.supportedTargetObj.supportedTargets.node]
+                              ...this.packageToProcess.supportedTargetObj.supportedTargets.node]      
         }
         else{
             for (const compileTarget of this.packageToProcess.mergedPrebuildifyOptions.targets){
-            
+                
                 if ((compileTarget as any)?.abiVersion ){
                     if (isAbiVersionSupported(compileTarget, (compileTarget as any).abiVersion)[1]){
-                        for (const rTarget of this.availableNodeApiTarget.filter((t:Target) => t.abi === (compileTarget as any).abiVersion )){
+                        for (const rTarget of this.availableNodeApiTarget.filter((t:Target) => 
+                            t.abi === (compileTarget as any).abiVersion && 
+                            ((compileTarget as any)?.runtime ?  (t.runtime == (compileTarget as any).runtime) : true)
+                         )){
                             updatedTargets.push(rTarget)
                         }
                         
@@ -143,7 +146,10 @@ export class Prebuilder{
                 else if((compileTarget as any)?.runtime && (compileTarget as any)?.target){
                     const abiVersion = nodeAbi.getAbi((compileTarget as any).target, (compileTarget as any).runtime)
                     if (isAbiVersionSupported(compileTarget, abiVersion)[1]){
-                        for (const rTarget of this.availableNodeApiTarget.filter((t:Target) => t.abi === abiVersion )){
+                        for (const rTarget of this.availableNodeApiTarget.filter((t:Target) => 
+                            t.abi === abiVersion &&
+                            t.runtime == (compileTarget as any).runtime
+                        )){
                             updatedTargets.push(rTarget)
                         }
                     }
@@ -173,10 +179,17 @@ export class PreBuildifyBuilder{
     }
 
     async Prebuildifier(packageToProcess: IPackageItem){
-        console.log(`Build native module: ${packageToProcess.fullPackageName}`)
+        if (packageToProcess.mergedPrebuildifyOptions.targets.length == 0){
+            console.log(`No targets to build for the native module '${packageToProcess.fullPackageName}'. Skipping`)
+            return Promise.resolve()
+        }
+
+        console.log(`Build native module: ${packageToProcess.fullPackageName}. Build options:- \n\n${JSON.stringify(packageToProcess.mergedPrebuildifyOptions, null, 4)}`)
+        
         return new Promise((resolve:any, reject:any) => {
             try{
                 preBuildify({...packageToProcess.mergedPrebuildifyOptions,
+                                nodeGyp: '/home/chidow/CentridProjects/OpensourceProjects/theia-installer-creator/node_modules/node-gyp/bin/node-gyp.js',
                                 out: packageToProcess.sourcePath,
                                 cwd: packageToProcess.sourcePath}, (err:any) => {
                     if (err){

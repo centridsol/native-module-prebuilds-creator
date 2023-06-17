@@ -31,6 +31,12 @@ export class PreBuildsCopier{
 
         const prebuildPath:string = path.join(distFolder, "prebuilds")
         for(const packageItem of Object.values(this.packagesToCopy)){
+            // Assume skipped. We check the path after build packages, and error out if not present. 
+            // The only way it can reach this point and be null is it was skipped
+            // TODO: maybe improve. Have a process indicator, that actually shows it was skipped
+            if (!packageItem.prebuildPaths){
+                continue
+            }
             const outputPath:string = path.join(prebuildPath, `${packageItem.packageName}@${packageItem.packageVersion}`)
 
             if (!fsExtra.existsSync(outputPath)){

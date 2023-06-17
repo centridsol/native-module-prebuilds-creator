@@ -11,18 +11,11 @@ export class PackageFetcher{
     private tempOutDir:string
     private tempDowloadFolder:string
     private tempExtractFolder:string
-    private tempNodeModules:string
     
     constructor(){
         this.tempOutDir = path.join(os.tmpdir(), Consts.TEMP_DIR_NAME)
         this.tempDowloadFolder = path.join(this.tempOutDir, "download")
         this.tempExtractFolder = path.join(this.tempOutDir, "extract")
-
-        this.tempNodeModules = path.join(this.tempExtractFolder, "node_modules")
-        if (!fsExtra.existsSync(this.tempNodeModules)){
-            fsExtra.mkdirSync(this.tempNodeModules, {recursive: true})
-        }
-
         console.log(`Using temp directory '${this.tempOutDir}'`)
     }
 
@@ -72,9 +65,6 @@ export class PackageFetcher{
 
         const extractedOutPath:string = path.join(this.tempExtractFolder, Helpers.MakeNameSafe(packageItem.fullPackageName))
         fsExtra.moveSync(path.join(downloadFolderPath, "package"), extractedOutPath, {overwrite: true})
-
-        const packageNodeModule:string = path.join(extractedOutPath, "node_modules")
-        fsExtra.symlinkSync(this.tempNodeModules, packageNodeModule )
 
         return extractedOutPath
     }
