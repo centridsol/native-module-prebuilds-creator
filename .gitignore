@@ -4,3 +4,4 @@ node_modules/
 temp/
 build/
 dist
+native-modules-prebuilds-creator/src/Operations/prebuild-patcher.js
