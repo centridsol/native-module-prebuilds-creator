@@ -5,6 +5,7 @@ import { TestHelper } from "../../../testUtils/Helper"
 import os from "os"
 import path from "path"
 import { PackageItem } from "../../src/PackageItem"
+import { rimrafSync } from "rimraf"
 
 
 export class TestMockObjectHelper{
@@ -13,6 +14,11 @@ export class TestMockObjectHelper{
         TestHelper.CleanUpTempDir(mockNativeDir)
         const outDir = TestHelper.GetTestTempDir(mockNativeDir)
         fsExtra.copySync(MockObjectRegister[mockObjectId].srcPath, outDir)
+
+        const existingBuildPath = path.join(outDir, "build")
+        if (fsExtra.existsSync(existingBuildPath)){
+            rimrafSync(existingBuildPath)
+        }
 
         const mainSrcPath = path.join(outDir, "src/main.cc")
         fsExtra.writeFileSync(mainSrcPath, fsExtra.readFileSync(mainSrcPath).toString().replace("<<SIMPLE_NATIVE_ID>>", outputPathId ? outputPathId : mockObjectId))

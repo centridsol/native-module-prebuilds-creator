@@ -10,6 +10,13 @@ export type INativeModuleToPatchDetails = {
 export type INativeModuleToPatch = { [packageName:string]: INativeModuleToPatchDetails}
 
 export interface IPatchStrategies{
-    IsApplicable(): boolean
+    CanPatch(): boolean
     Patch(): boolean
+}
+
+export interface IPactherOptions{
+    forceRebuildOnNoBindings?: boolean,
+    shouldBackup?: boolean
+    backUpFolderPath?: string
+    onPatchFail?: 'error' | 'skip'
 }

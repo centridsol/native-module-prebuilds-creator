@@ -1,32 +1,50 @@
-import { INativeModuleToPatchDetails, IPatchStrategies } from "../IPrebuildsPatcher";
+import { INativeModuleToPatchDetails, IPactherOptions, IPatchStrategies } from "../IPrebuildsPatcher";
 import fsExtra from "fs-extra"
 import path from "path"
 import mergedirs from "merge-dirs"
-import bindings from "bindings"
+import { spawnSync } from "child_process";
+import { GetBindingPath } from "../Utilities/Bindings";
 
 abstract class PatcherStrategyBase implements IPatchStrategies{
 
     protected nativeModule:INativeModuleToPatchDetails
     protected packageJson:any
     protected bindingJson:any
+    protected patcherOptions:IPactherOptions
+    protected canPatch:boolean
 
-    constructor(nativeModule:INativeModuleToPatchDetails){
+    constructor(nativeModule:INativeModuleToPatchDetails, patcherOptions:IPactherOptions){
         this.nativeModule = nativeModule
         this.packageJson =  JSON.parse(fsExtra.readFileSync(path.join(nativeModule.path, "package.json")).toString())
         this.bindingJson =  JSON.parse(fsExtra.readFileSync(path.join(nativeModule.path, "binding.gyp")).toString())
+        this.patcherOptions = patcherOptions
+        this.canPatch = this.GetCanPatchValue()
     }
 
-    abstract IsApplicable():boolean
+    protected abstract GetCanPatchValue():boolean
     abstract Patch():boolean
+
+    protected CheckCanRun(){
+        if(!this.canPatch){
+            // @ts-ignore
+            throw new Error(`The patch strategy '${this.constructor.name}' cannot be run`)
+        }
+        
+    }
+    CanPatch(){
+        return this.canPatch
+    }
+
 }
 
 export class PrebuildifyPatcherStratgey extends PatcherStrategyBase{
-    IsApplicable(){
+    protected GetCanPatchValue(){
         return "devDependencies" in this.packageJson 
                 && "prebuildify" in this.packageJson.devDependencies
     }
 
     Patch(){
+        this.CheckCanRun()
         console.log(`Package '${this.nativeModule.name}' seems to use prebuildify. Patching by merging prebuilds folders `)
         const currentPrebuildFolder:string = path.join(this.nativeModule.path, "prebuilds")
         if (!fsExtra.existsSync(currentPrebuildFolder)){
@@ -41,37 +59,41 @@ export class PrebuildifyPatcherStratgey extends PatcherStrategyBase{
 
 export class BuiltPatcherStratgey extends PatcherStrategyBase{
     private bindingTargetName:string
-    private bindingPath:string
-    constructor(nativeModule:INativeModuleToPatchDetails){
-        super(nativeModule)
-        this.bindingTargetName = this.bindingJson.targets[0].target_name
-    }
+    private bindingPath:string 
 
-    IsApplicable(){
+    private SetBinding(){
+        this.bindingTargetName = this.bindingJson.targets[0].target_name
         try{
-            this.bindingPath = bindings({
-                bindings: this.bindingTargetName,
-                // @ts-ignore
-                module_root: this.nativeModule.path,
-                path: true
-            })
+            this.bindingPath = GetBindingPath(this.nativeModule.path, this.bindingTargetName)
             if (!(this.bindingPath && fsExtra.existsSync(this.bindingPath))){
-                return false
+                return null
             }
         }
         catch(err:any){
-            return false
+            return null
         }
-        return true
-        
+       
+        return this.bindingPath
+    }
+
+    protected GetCanPatchValue(){
+        return this.SetBinding() != null
     }
 
     Patch(){
+        this.CheckCanRun()
         console.log(`Pacthing package ${this.nativeModule.name} using strategy 'BuiltPatcherStratgey'`)
-        fsExtra.copy(this.nativeModule.prebuildsArchAndPlatformPath as string, path.dirname(this.bindingPath))
+        return this.DoPatch()
+    }
+
+    protected DoPatch(){
+        if (!(this.bindingPath ? this.bindingPath : this.SetBinding())){
+            throw new Error(`Could not find the binding path for '${this.nativeModule.name}'`)
+        }
 
         const bindingPathDir = path.dirname(this.bindingPath)
-        fsExtra.unlinkSync(this.bindingPath)
+        mergedirs(this.nativeModule.prebuildsArchAndPlatformPath as string, bindingPathDir,  'overwrite')
+
         fsExtra.renameSync(path.join(bindingPathDir, path.basename(this.nativeModule.prebuildsArchAndPlatformAbiPath as string)), 
                            this.bindingPath)
   
@@ -79,55 +101,24 @@ export class BuiltPatcherStratgey extends PatcherStrategyBase{
     }
 }
 
-export class UnbuiltPatcherStratgey extends PatcherStrategyBase{
-    // From https://github.com/TooTallNate/node-bindings/blob/master/bindings.js
-    static POTENTIAL_PATHS = [
-        // node-gyp's linked version in the "build" dir
-        ['module_root', 'build'],
-        // node-waf and gyp_addon (a.k.a node-gyp)
-        ['module_root', 'build', 'Debug'],
-        ['module_root', 'build', 'Release'],
-        // Debug files, for development (legacy behavior, remove for node v0.9)
-        ['module_root', 'out', 'Debug'],
-        ['module_root', 'Debug'],
-        // Release files, but manually compiled (legacy behavior, remove for node v0.9)
-        ['module_root', 'out', 'Release'],
-        ['module_root', 'Release'],
-        // Legacy from node-waf, node <= 0.4.x
-        ['module_root', 'build', 'default'],
-        // Production "Release" buildtype binary (meh...)
-        ['module_root', 'compiled', 'version', 'platform', 'arch'],
-        // node-qbs builds
-        ['module_root', 'addon-build', 'release', 'install-root'],
-        ['module_root', 'addon-build', 'debug', 'install-root'],
-        ['module_root', 'addon-build', 'default', 'install-root'],
-        // node-pre-gyp path ./lib/binding/{node_abi}-{platform}-{arch}
-        ['module_root', 'lib', 'binding', 'nodePreGyp']
-      ]
-
-    private potentialPaths:string[] = []
-    private bindingTargetName:string
-    constructor(nativeModule:INativeModuleToPatchDetails){
-        super(nativeModule)
-        this.potentialPaths =  UnbuiltPatcherStratgey.POTENTIAL_PATHS.map((v:string[])=> {
-            v[0] =this.nativeModule.path
-            return v.join("/")
-        })
-        this.bindingTargetName = this.bindingJson.targets[0].target_name
-    }
-
-    IsApplicable(){
-        return true
+export class UnbuiltPatcherStratgey extends BuiltPatcherStratgey{
+    protected GetCanPatchValue(){
+        return this.patcherOptions.forceRebuildOnNoBindings ===  true
     }
 
     Patch(){
+        this.CheckCanRun()
         console.log(`Pacthing package ${this.nativeModule.name} using strategy 'UnBuiltPatcherStratgey'`)
-        for (const potentialPath of this.potentialPaths){
-            fsExtra.mkdirSync(potentialPath, {recursive: true})
-            fsExtra.copy(this.nativeModule.prebuildsArchAndPlatformPath as string, potentialPath)
-            fsExtra.renameSync(path.join(potentialPath, path.basename(this.nativeModule.prebuildsArchAndPlatformAbiPath as string)), 
-                                this.bindingTargetName)
+        debugger
+        let nodeGypPath:string 
+        try{
+            nodeGypPath = require.resolve('node-gyp/bin/node-gyp.js')
         }
-        return true
+        catch(err:any){
+            throw new Error(`node-gyp does not seem to be installed. Needed for patch strategy UnbuiltPatcherStratgey`)
+        }
+        
+        spawnSync(nodeGypPath, ["rebuild"], { stdio: 'inherit', cwd: this.nativeModule.path})
+        return this.DoPatch()
     }
 }
