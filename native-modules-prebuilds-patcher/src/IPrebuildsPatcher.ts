@@ -2,9 +2,9 @@ export type INativeModuleToPatchDetails = {
     name: string,
     version: string,
     path: string,
-    prebuildsPath?:string,
-    prebuildsArchAndPlatformPath?:string,
-    prebuildsArchAndPlatformAbiPath?:string
+    prebuildsPath?:string | null,
+    prebuildsArchAndPlatformPath?:string | null,
+    prebuildsArchAndPlatformAbiPath?:string | null
 }
 
 export type INativeModuleToPatch = { [packageName:string]: INativeModuleToPatchDetails}

@@ -33,7 +33,7 @@ export class PrebuildifyPatcherStratgey extends PatcherStrategyBase{
             fsExtra.mkdirSync(currentPrebuildFolder, {recursive:true})
         }
 
-        mergedirs(this.nativeModule.prebuildsPath, currentPrebuildFolder)
+        mergedirs(this.nativeModule.prebuildsPath, currentPrebuildFolder, 'overwrite')
         return true
     }
 }
@@ -51,6 +51,7 @@ export class BuiltPatcherStratgey extends PatcherStrategyBase{
         try{
             this.bindingPath = bindings({
                 bindings: this.bindingTargetName,
+                // @ts-ignore
                 module_root: this.nativeModule.path,
                 path: true
             })
