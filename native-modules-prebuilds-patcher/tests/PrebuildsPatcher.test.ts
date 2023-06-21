@@ -5,14 +5,92 @@ import os from "os"
 import fs from "fs"
 import { IPactherOptions } from "../src/IPrebuildsPatcher"
 import { TestHelper } from "../../testUtils/Helper"
+import { rimrafSync } from "rimraf"
+import { Consts } from "../src/Utilities/Consts"
 
 describe("Prebuilds patcher tests", () => {
     describe("Can revert backup", () => {
-        it("Can Revert back packages", () => {
 
+        let mockPrebuildInstance:PrebuildsPatcher
+        const backUpDir = path.join(os.tmpdir(), Consts.BACKUP_DIR_NAME)
+
+        beforeEach(()=> {
+            
+            if (fs.existsSync(backUpDir)){
+                rimrafSync(backUpDir)
+            }
+        
+            TestHelper.CleanUpTempDir(PatcherTestHelper.GetMockNodeModuleDir())
+            PatcherTestHelper.CreateMockPackage("test-m1")
+            mockPrebuildInstance = getPrebuildsPatcherInstance({
+                "test-m1": {
+                    "1.0.0": [ "win32-x64/electron.abi116.node", 
+                                "linux-x64/electron.abi116.node"]
+                },
+            }, {
+                projectPath: path.dirname(PatcherTestHelper.GetMockNodeModuleDir())
+            })
         })
 
-        it("Auto reverts on error", () => {
+        it("Does not revert package in different projects",async ()=>{
+            await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
+
+            const packagePath:string = path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1")
+            const initalPatchHash = TestHelper.GenerateFolderHashSync(packagePath)
+            
+            mockPrebuildInstance.SetProjectPath(TestHelper.GetTestTempDir("randomPath"))
+            mockPrebuildInstance.RevertPatchs()
+
+            expect(fs.existsSync(path.join(packagePath, "buHash"))).toBeTruthy()
+            expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
+        })
+
+        it("Does not revert packages with different version",async ()=>{
+            await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
+
+            const packagePath:string = path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1")
+
+            fs.writeFileSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", "package.json"), JSON.stringify({
+                name: "test-m1",
+                version: "2.0.0"
+            }))
+            mockPrebuildInstance.RevertPatchs()
+
+            expect(fs.existsSync(path.join(packagePath, "buHash"))).toBeTruthy()
+        })
+
+        it("Can Revert back packages", async () => {
+            const packagePath:string = path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1")
+            const initalPatchHash = TestHelper.GenerateFolderHashSync(packagePath)
+
+            await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
+            mockPrebuildInstance.RevertPatchs()
+
+            expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", "buHash"))).toBeFalsy()
+            expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
+        })
+
+        it("Auto reverts on error", async () => {
+
+            mockPrebuildInstance = getPrebuildsPatcherInstance({
+                "test-m1": {
+                    "1.0.0": [ "win32-x64/electron.abi116.node", 
+                                "linux-x64/electron.abi116.node"]
+                },
+            }, {
+                projectPath: path.dirname(PatcherTestHelper.GetMockNodeModuleDir()),
+                forceRebuildOnNoBindings: false
+            })
+
+            const packagePath:string = path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1")
+            const initalPatchHash = TestHelper.GenerateFolderHashSync(packagePath)
+            
+            try{
+                await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
+            }catch(err:any){}
+            
+            expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", "buHash"))).toBeFalsy()
+            expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
 
         })
     })
@@ -137,10 +215,7 @@ describe("Prebuilds patcher tests", () => {
         let mockPrebuildInstance:PrebuildsPatcher
         const mockPackages = ["test-m1", "test-m2", "test-m3", "test-m4"]
         beforeAll(()=> {
-            TestHelper.CleanUpTempDir(PatcherTestHelper.GetMockNodeModuleDir())
-            for (const packageName of mockPackages){
-                PatcherTestHelper.CreateMockPackage(packageName)
-            }
+            
             mockPrebuildInstance = getPrebuildsPatcherInstance({
                 "test-m1": {
                     "1.0.0": [ "win32-x64/electron.abi116.node", 
@@ -160,6 +235,14 @@ describe("Prebuilds patcher tests", () => {
                 projectPath: path.dirname(PatcherTestHelper.GetMockNodeModuleDir())
             })
         })
+
+        beforeEach(()=>{
+            TestHelper.CleanUpTempDir(PatcherTestHelper.GetMockNodeModuleDir())
+            for (const packageName of mockPackages){
+                PatcherTestHelper.CreateMockPackage(packageName)
+            }
+        })
+
         it("Can get native modules", async () => {
             expect(await mockPrebuildInstance["GetProjectNativeModules"]()).toEqual(mockPackages.reduce((pv:any, cv:any)=>{
                 pv[cv] = {

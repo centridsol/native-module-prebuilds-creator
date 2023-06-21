@@ -2,6 +2,7 @@ import TestConsts from "./Consts"
 import path from "path"
 import fs from "fs"
 import rimraf from "rimraf"
+import crypto from "crypto"
 
 export class TestHelper{
     private static CheckTempPath(pathToCheck:string){
@@ -25,4 +26,34 @@ export class TestHelper{
             rimraf.sync(tempPath);
         }
     }
+
+    static GenerateFolderHashSync(folderPath:string) {
+        const hash = crypto.createHash('sha256');
+      
+        function processFile(filePath:string) {
+          const fileData = fs.readFileSync(filePath);
+          hash.update(fileData);
+        }
+      
+        function processFolder(folderPath:string) {
+          const files = fs.readdirSync(folderPath);
+      
+          files.forEach((file) => {
+            const filePath = path.join(folderPath, file);
+            const stats = fs.statSync(filePath);
+      
+            if (stats.isFile()) {
+              processFile(filePath);
+            } else if (stats.isDirectory()) {
+              processFolder(filePath);
+            } else {
+              // Ignore other types of files (e.g., symbolic links)
+            }
+          });
+        }
+      
+        processFolder(folderPath);
+        return hash.digest('hex');
+      }
+      
 }

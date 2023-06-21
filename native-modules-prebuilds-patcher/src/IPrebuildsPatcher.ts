@@ -17,7 +17,6 @@ export interface IPatchStrategies{
 export interface IPactherOptions{
     forceRebuildOnNoBindings?: boolean,
     shouldBackup?: boolean
-    backUpFolderPath?: string
     onPatchFail?: 'error' | 'skip'
     onNoPrebuildsFound?: 'error' | 'skip' 
     projectPath?: string

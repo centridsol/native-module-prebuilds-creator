@@ -20,11 +20,10 @@ export class Patcher{
         this.patcherOptions = {
             shouldBackup:true,
             forceRebuildOnNoBindings: true,
-            backUpFolderPath: path.join(os.tmpdir(), Consts.BACKUP_DIR_NAME),
             onPatchFail: 'error',
             ...patcherOptions
         }
-        this.backUpPath = this.patcherOptions.backUpFolderPath
+        this.backUpPath = path.join(os.tmpdir(), Consts.BACKUP_DIR_NAME)
         this.backUpHash = (+new Date).toString(36)
     }
 
