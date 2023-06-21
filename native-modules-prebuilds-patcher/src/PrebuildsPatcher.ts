@@ -37,9 +37,11 @@ export class PrebuildsPatcher{
     }
 
     SetProjectPath(projectDir:string){
-        //TOD0: Validatae
+        if (!fsExtra.existsSync(projectDir)){
+            throw new Error(`The project path '${projectDir}' does not exist`)
+        }
+        
         this.projectDir = projectDir
-
     }
 
     async RevertPatch(){

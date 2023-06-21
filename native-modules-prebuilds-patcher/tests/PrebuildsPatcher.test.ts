@@ -4,6 +4,7 @@ import path from "path"
 import os from "os"
 import fs from "fs"
 import { IPactherOptions } from "../src/IPrebuildsPatcher"
+import { TestHelper } from "../../testUtils/Helper"
 
 describe("Prebuilds patcher tests", () => {
     describe("Can revert backup", () => {
@@ -136,7 +137,7 @@ describe("Prebuilds patcher tests", () => {
         let mockPrebuildInstance:PrebuildsPatcher
         const mockPackages = ["test-m1", "test-m2", "test-m3", "test-m4"]
         beforeAll(()=> {
-            
+            TestHelper.CleanUpTempDir(PatcherTestHelper.GetMockNodeModuleDir())
             for (const packageName of mockPackages){
                 PatcherTestHelper.CreateMockPackage(packageName)
             }
