@@ -1,21 +1,42 @@
 
-import fsExtra from "fs-extra";
+import fsExtra, { readFileSync } from "fs-extra";
 import nodeAbi from 'node-abi'
 import path from "path";
 import semver from "semver";
-import { INativeModuleToPatch } from "./IPrebuildsPatcher";
+import { INativeModuleToPatch, IPactherOptions } from "./IPrebuildsPatcher";
+import { Patcher } from "./Patcher/Patcher";
 
 
 export class PrebuildsPatcher{
     private prebuildsManifest:any
+    private prebuildsFolder:string
     private projectDir:string
+    private patcherOptions:IPactherOptions
 
-    constructor(prebuildsPath:string){
+    constructor(prebuildsPath:string, patcherOptions:IPactherOptions={}){
         this.prebuildsManifest = JSON.parse(fsExtra.readFileSync(prebuildsPath).toString())
-        //this.projectPath = this.TryGetProjectPath()
+        this.prebuildsFolder = path.dirname(prebuildsPath)
+        this.patcherOptions = {onNoPrebuildsFound: 'skip', ...patcherOptions}
+        this.projectDir = patcherOptions.projectPath || this.TryGetProjectPath()
     }
 
-    async SetProjectPath(projectDir:string){
+    private TryGetProjectPath(){
+
+        const _getProjectPath:any = (dir:string, prev:string = null) => {
+            if (prev && prev === dir){
+                throw new Error(`Could not determine the project path. Either set it in the options or run the from a project folder`)
+            }
+            if ( fsExtra.existsSync(path.join(dir, "package.json")) ||
+                 fsExtra.existsSync(path.join(dir, "node_modules")) ){
+                return dir    
+            }
+            return _getProjectPath(path.join(dir, ".."), dir)
+        }
+
+        return _getProjectPath(process.cwd())
+    }
+
+    SetProjectPath(projectDir:string){
         //TOD0: Validatae
         this.projectDir = projectDir
 
@@ -25,11 +46,20 @@ export class PrebuildsPatcher{
 
     }
 
-    ValaidateAndGetNativeModulesToPatch(nativeModuleToPatch:INativeModuleToPatch, arch:any, platform:any, runtime:any){
-        return Object.entries(nativeModuleToPatch).filter(([packagaeName, packageDetails]) => {
-            if (!(packagaeName in this.prebuildsManifest)){
-                console.warn(`No prebuilds found for the package ${packagaeName}. Skipping`)
+    private ValaidateAndGetNativeModulesToPatch(nativeModuleToPatch:INativeModuleToPatch, arch:any, platform:any, runtime:any){
+        const processOnNoPrebuildsFound =(errMessage:string) => {
+            if (this.patcherOptions.onNoPrebuildsFound == 'error'){
+                throw new Error(errMessage)
+            }
+            if (this.patcherOptions.onNoPrebuildsFound == 'skip'){
+                console.warn(`${errMessage}. Skipping`)
                 return false
+            }
+            return false
+        }
+        return Object.fromEntries(Object.entries(nativeModuleToPatch).filter(([packagaeName, packageDetails]) => {
+            if (!(packagaeName in this.prebuildsManifest)){
+                return processOnNoPrebuildsFound(`No prebuilds found for the package ${packagaeName}`)
             }
 
             const prebuildVersion:string = Object.keys(this.prebuildsManifest[packagaeName]).find((prebuildVersion:string) => {
@@ -38,23 +68,19 @@ export class PrebuildsPatcher{
             })
 
             if (!prebuildVersion){
-                console.warn(`No prebuilds with the version ${packageDetails.version} found for the package ${packagaeName}. Skipping`)
-                return false
+                return processOnNoPrebuildsFound(`No prebuilds with the version ${packageDetails.version} found for the package ${packagaeName}`)
             }
 
             const prebuildsDetails = this.prebuildsManifest[packagaeName][prebuildVersion]
 
-            const arcPlatformPath:string = path.join(prebuildsDetails.prebuildPath, `${platform}-${arch}`)
+            const arcPlatformPath:string = path.join(this.prebuildsFolder, prebuildsDetails.prebuildPath, `${platform}-${arch}`)
 
-            if (!fsExtra.exists(arcPlatformPath)){
-                console.warn(`No prebuilds for the platform ${platform} and arch ${arch}found for the package ${packagaeName}. Skipping`)
-                return false
-
+            if (!fsExtra.existsSync(arcPlatformPath)){
+                return processOnNoPrebuildsFound(`No prebuilds for the platform ${platform} and arch ${arch}found for the package ${packagaeName}.`)
             }
 
             if (!runtime.includes("@")){
-                console.log(`The runtime value must have the format [runtime]@[version]`)
-                return false
+                throw new Error(`The runtime value must have the format [runtime]@[version]`)
             }
 
             const pDetails = runtime.split("@")
@@ -64,28 +90,24 @@ export class PrebuildsPatcher{
             }
 
             const targetAbi:string = nodeAbi.getAbi(runtimeDetails.target, runtimeDetails.runtime)
-            
             const nodeApiFileName = fsExtra.readdirSync(arcPlatformPath).find((fp:string) => {
-                return fp == `${runtimeDetails.target}.${targetAbi}.node`
+                return fp == `${runtimeDetails.runtime}.abi${targetAbi}.node`
             })
 
             if (!nodeApiFileName){
-                console.log(`Could not find any prebuilds for the runtime '${runtimeDetails}'. Skipping`)
-                return false
+                return processOnNoPrebuildsFound(`Could not find any prebuilds for the runtime '${runtime}'.`)
             }
 
-            packageDetails.prebuildsPath = prebuildsDetails.prebuildPath
+            packageDetails.prebuildsPath = path.join(this.prebuildsFolder, prebuildsDetails.prebuildPath)
             packageDetails.prebuildsArchAndPlatformPath = arcPlatformPath
             packageDetails.prebuildsArchAndPlatformAbiPath = path.join(arcPlatformPath, nodeApiFileName)
              
             return true
-        })
+        }))
     }
 
-    private async DoPatch(packages:any, arch:any, platform:any, runtime:any){
-        // TODO: Bacup
-        //TODO: Uses prebuilds //
-        //TODO: Use Binding stategy
+    private async DoPatch(packages:any){
+        new Patcher(this.patcherOptions).Patch(packages)
     }
 
     async Patch(packagesToPatch:string[], arch:any, platform:any, runtime:any){
@@ -100,19 +122,15 @@ export class PrebuildsPatcher{
                     version: pDetails[1]
                 }
             }
-            return {
-                name: p,
-                version: "latest"
-            }
+            throw new Error(`Package to patch should have the format [package]@[version]`)
         }).map((pD:any) => {
             if (!(pD.name in availableNativeModules)){
-                console.warn(`The package '${pD.name}' in not installed for your project. Skipping`)
-                return null
+                throw new Error(`The package '${pD.name}' in not installed for your project.`)
+
             }
 
-            if (!(pD.version == "latest" || semver.satisfies(availableNativeModules[pD.name].version, pD.version))){
-                console.warn(`The installed version of the package '${pD.name}' has different version. Installed version '${availableNativeModules[pD.name].version}'. Required version '${pD.version}'. Skipping`)
-                return null
+            if (!semver.satisfies(availableNativeModules[pD.name].version, pD.version)){
+                throw new Error(`The installed version of the package '${pD.name}' has different version. Installed version '${availableNativeModules[pD.name].version}'. Required version '${pD.version}'`)
             }
 
             return availableNativeModules[pD.name]
@@ -120,24 +138,25 @@ export class PrebuildsPatcher{
         }).filter((pD:any) => pD != null)
 
 
-        this.DoPatch(this.ValaidateAndGetNativeModulesToPatch(nativeModulesToPatch, arch, platform, runtime), arch, platform, runtime)
+        this.DoPatch(this.ValaidateAndGetNativeModulesToPatch(nativeModulesToPatch, arch, platform, runtime))
         
     }
 
     async PatchAll(arch:any, platform:any, runtime:any){        
         const prebuildsAvailable = this.ValaidateAndGetNativeModulesToPatch(await this.GetProjectNativeModules(), arch, platform, runtime)
-        this.DoPatch(prebuildsAvailable, arch, platform, runtime)
+        this.DoPatch(prebuildsAvailable)
 
     }
 
-    async GetProjectNativeModules(nodeModulesPath:string=this.projectDir, filter:(moduleName: string, realPath:string) => boolean = null): Promise<INativeModuleToPatch>{
-        // Extract from 
+    private async GetProjectNativeModules(projectPath:string=this.projectDir, filter:(moduleName: string, realPath:string) => boolean = null): Promise<INativeModuleToPatch>{
+        const nodeModulesPath = path.join(projectPath, "node_modules")
+
         let nodeModulesPaths = new Set([])
         let modulePaths = new Set([])
         let nativeModules:INativeModuleToPatch = {}
 
         const _getNativeModules = async (_nodeModulesPath:string) => {
-            const realNodeModulesPath = await fsExtra.realpath(this.projectDir);
+            const realNodeModulesPath = await fsExtra.realpath(_nodeModulesPath);
             if (nodeModulesPaths.has(realNodeModulesPath)) {
                 return;
             }
@@ -154,10 +173,11 @@ export class PrebuildsPatcher{
                 modulePaths.add(realPath);
         
                 if (await fsExtra.pathExists(path.resolve(realPath, 'binding.gyp'))) {
-                    if (!(filter && filter(modulePath, realPath))){
+                    if (filter && !filter(modulePath, realPath)){
                         continue
                     }
-                    const packageJson= JSON.parse(await fsExtra.readFile(path.join(realPath, "package.json")).toString())
+
+                    const packageJson= JSON.parse((await fsExtra.readFile(path.join(realPath, "package.json"))).toString())
                     nativeModules[packageJson.name]  = {
                         name:packageJson.name,
                         version:packageJson.version,

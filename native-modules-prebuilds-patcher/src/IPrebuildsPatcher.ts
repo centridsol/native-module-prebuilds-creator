@@ -19,4 +19,6 @@ export interface IPactherOptions{
     shouldBackup?: boolean
     backUpFolderPath?: string
     onPatchFail?: 'error' | 'skip'
+    onNoPrebuildsFound?: 'error' | 'skip' 
+    projectPath?: string
 }
