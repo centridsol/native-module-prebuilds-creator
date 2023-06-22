@@ -96,7 +96,7 @@ describe("Patcher tests", () => {
                 expect(packageJson.name).toEqual(nTP.name)
                 expect(packageJson.version).toEqual(nTP.version)
 
-                const buJson = JSON.parse(fs.readFileSync(path.join(backUpPath, "buHash.json")).toString())
+                const buJson = JSON.parse(fs.readFileSync(path.join(backUpPath, Consts.BACKUP_JSON_NAME)).toString())
                 expect(buJson.buHash).toBeTruthy()
                 delete buJson.buHash
 

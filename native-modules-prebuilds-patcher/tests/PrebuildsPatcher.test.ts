@@ -41,7 +41,7 @@ describe("Prebuilds patcher tests", () => {
             mockPrebuildInstance.SetProjectPath(TestHelper.GetTestTempDir("randomPath"))
             mockPrebuildInstance.RevertPatchs()
 
-            expect(fs.existsSync(path.join(packagePath, "buHash"))).toBeTruthy()
+            expect(fs.existsSync(path.join(packagePath, Consts.BACKUP_JSON_NAME))).toBeTruthy()
             expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
         })
 
@@ -56,7 +56,20 @@ describe("Prebuilds patcher tests", () => {
             }))
             mockPrebuildInstance.RevertPatchs()
 
-            expect(fs.existsSync(path.join(packagePath, "buHash"))).toBeTruthy()
+            expect(fs.existsSync(path.join(packagePath, Consts.BACKUP_JSON_NAME))).toBeTruthy()
+        })
+
+        it("It doesnt repatch if already patched", async () => {
+            const getFileHashDetails = () => {
+                const stats = fs.statSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", Consts.BACKUP_JSON_NAME))
+                return `${stats.atime.getTime()}-${stats.mtime.getTime()}-${stats.ctime.getTime()}`
+            }
+            await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
+            const initalPatchStats = getFileHashDetails()
+
+            await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
+            expect(initalPatchStats).toEqual(getFileHashDetails())
+
         })
 
         it("Can Revert back packages", async () => {
@@ -66,7 +79,7 @@ describe("Prebuilds patcher tests", () => {
             await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
             mockPrebuildInstance.RevertPatchs()
 
-            expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", "buHash"))).toBeFalsy()
+            expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", Consts.BACKUP_JSON_NAME))).toBeFalsy()
             expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
         })
 
@@ -89,7 +102,7 @@ describe("Prebuilds patcher tests", () => {
                 await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
             }catch(err:any){}
             
-            expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", "buHash"))).toBeFalsy()
+            expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", Consts.BACKUP_JSON_NAME))).toBeFalsy()
             expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
 
         })
@@ -257,11 +270,11 @@ describe("Prebuilds patcher tests", () => {
         it("Can Patch All (relevent)", async () => {
             await mockPrebuildInstance.PatchAll("x64", "win32", "electron@25.0.0")
             for (const p of ["test-m1", "test-m4"]){
-                expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, "buHash"))).toBeTruthy()
+                expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, Consts.BACKUP_JSON_NAME))).toBeTruthy()
             }
 
             for (const p of ["test-m2", "test-m3"]){
-                expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, "buHash"))).toBeFalsy()
+                expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, Consts.BACKUP_JSON_NAME))).toBeFalsy()
             }
         })
 
@@ -295,11 +308,11 @@ describe("Prebuilds patcher tests", () => {
             it("Can patch specific", async () => {
                 await mockPrebuildInstance.Patch(["test-m1@1.0.0", "test-m3@1.0.0", "test-m4@1.0.0"],"x64", "win32", "electron@25.0.0")
                 for (const p of ["test-m1", "test-m4"]){
-                    expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, "buHash"))).toBeTruthy()
+                    expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, Consts.BACKUP_JSON_NAME))).toBeTruthy()
                 }
     
                 for (const p of ["test-m3"]){
-                    expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, "buHash"))).toBeFalsy()
+                    expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), p, Consts.BACKUP_JSON_NAME))).toBeFalsy()
                 }
             })
         })

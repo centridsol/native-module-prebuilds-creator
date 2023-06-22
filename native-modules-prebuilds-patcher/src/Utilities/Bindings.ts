@@ -40,20 +40,41 @@ const bindingSettings = {
     ]
 }
 
-export const GetBindingPath = (module_root:string, bindings:string) => {
+export const TryGetBindingPath = (module_root:string) => {
 
-    if (path.extname(bindings) != '.node') {
-        bindings += '.node';
-    }
+    let updatedOpts:any = {...bindingSettings, module_root }
 
-    const updatedOpts:any = {...bindingSettings, module_root, bindings}
-    for (const potentialPath of updatedOpts.try){
-        const pathToCheck = path.join(...potentialPath.map((p:string) => {
-            return updatedOpts[p] || p
+    const potentialBindingName = bindingSettings.try.map((v:string[]) => {
+        return path.join(...v.map((p:string) => {
+            return p != "bindings" ? (updatedOpts[p] || p) : ""
         }))
-        if (fs.existsSync(pathToCheck)){
-            return pathToCheck
+    }).reduce((pv:any, cv:string)=> {
+
+        if (!fs.existsSync(cv)){
+            return pv
+        }
+        for (const file of fs.readdirSync(cv)){
+            if (path.extname(file) === ".node"){
+                pv.add(file)
+            }
+        }
+        return pv
+
+    }, new Set([]))
+
+
+    if (potentialBindingName.size == 1){
+        updatedOpts = {...updatedOpts, bindings: [...potentialBindingName][0]}
+        for (const potentialPath of updatedOpts.try){
+            const pathToCheck = path.join(...potentialPath.map((p:string) => {
+                return updatedOpts[p] || p
+            }))
+    
+            if (fs.existsSync(pathToCheck)){
+                return pathToCheck
+            }
         }
     }
+
     return null
 }

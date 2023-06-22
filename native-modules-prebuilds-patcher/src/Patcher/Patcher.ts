@@ -53,7 +53,11 @@ export class Patcher{
         console.debug(`Backing up the package ${nativeModule.name} to ${buPath}`)
         
         fsExtra.copySync(nativeModule.path, buPath)
-        fsExtra.writeFileSync(path.join(buPath, "buHash.json"), JSON.stringify({...nativeModule, buHash: this.backUpHash}, null, 4))
+        fsExtra.writeFileSync(path.join(buPath, Consts.BACKUP_JSON_NAME), this.GetBuHashDetails(nativeModule))
+    }
+
+    private GetBuHashDetails(nativeModule:INativeModuleToPatchDetails){
+        return JSON.stringify({...nativeModule, buHash: this.backUpHash}, null, 4)
     }
 
     private StrategyPatch(nativeModule:INativeModuleToPatchDetails){
@@ -83,7 +87,7 @@ export class Patcher{
 
         if (isPatched){
             if (this.patcherOptions.shouldBackup === true){
-                fsExtra.writeFileSync(path.join(nativeModule.path, "buHash"), this.backUpHash)
+                fsExtra.writeFileSync(path.join(nativeModule.path, Consts.BACKUP_JSON_NAME), this.GetBuHashDetails(nativeModule))
             }
         }
         else{
