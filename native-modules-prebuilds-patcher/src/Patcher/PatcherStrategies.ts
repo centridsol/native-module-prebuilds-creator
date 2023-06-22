@@ -3,20 +3,18 @@ import fsExtra from "fs-extra"
 import path from "path"
 import mergedirs from "merge-dirs"
 import { spawnSync } from "child_process";
-import { GetBindingPath } from "../Utilities/Bindings";
+import { TryGetBindingPath } from "../Utilities/Bindings";
 
 abstract class PatcherStrategyBase implements IPatchStrategies{
 
     protected nativeModule:INativeModuleToPatchDetails
     protected packageJson:any
-    protected bindingJson:any
     protected patcherOptions:IPactherOptions
     protected canPatch:boolean
 
     constructor(nativeModule:INativeModuleToPatchDetails, patcherOptions:IPactherOptions){
         this.nativeModule = nativeModule
         this.packageJson =  JSON.parse(fsExtra.readFileSync(path.join(nativeModule.path, "package.json")).toString())
-        this.bindingJson =  JSON.parse(fsExtra.readFileSync(path.join(nativeModule.path, "binding.gyp")).toString())
         this.patcherOptions = patcherOptions
         this.canPatch = this.GetCanPatchValue()
     }
@@ -58,13 +56,11 @@ export class PrebuildifyPatcherStratgey extends PatcherStrategyBase{
 
 
 export class BuiltPatcherStratgey extends PatcherStrategyBase{
-    private bindingTargetName:string
     private bindingPath:string 
 
     private SetBinding(){
-        this.bindingTargetName = this.bindingJson.targets[0].target_name
         try{
-            this.bindingPath = GetBindingPath(this.nativeModule.path, this.bindingTargetName)
+            this.bindingPath = TryGetBindingPath(this.nativeModule.path)
             if (!(this.bindingPath && fsExtra.existsSync(this.bindingPath))){
                 return null
             }
@@ -109,10 +105,9 @@ export class UnbuiltPatcherStratgey extends BuiltPatcherStratgey{
     Patch(){
         this.CheckCanRun()
         console.log(`Pacthing package ${this.nativeModule.name} using strategy 'UnBuiltPatcherStratgey'`)
-        debugger
         let nodeGypPath:string 
         try{
-            nodeGypPath = require.resolve('node-gyp/bin/node-gyp.js')
+            nodeGypPath = eval("require.resolve('node-gyp/bin/node-gyp.js')")
         }
         catch(err:any){
             throw new Error(`node-gyp does not seem to be installed. Needed for patch strategy UnbuiltPatcherStratgey`)

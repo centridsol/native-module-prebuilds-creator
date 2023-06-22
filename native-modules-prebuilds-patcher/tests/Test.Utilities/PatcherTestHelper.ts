@@ -1,15 +1,8 @@
 import { TestHelper } from "../../../testUtils/Helper"
 import path from "path"
 import fsExtra from "fs-extra"
-import { INativeModuleToPatchDetails } from "../../src/IPrebuildsPatcher"
-import { PreBuildifyBuilder } from "../../../native-modules-prebuilds-creator/src/Operations/PreBuildifyBuilder"
-import { PreBuildsCopier } from "../../../native-modules-prebuilds-creator/src/Operations/PreBuildsCopier"
-import { PackageItem } from "../../../native-modules-prebuilds-creator/src/PackageItem"
-import { IPackageItem, IPackageItemsToProcess } from "../../../native-modules-prebuilds-creator/src/IPrebuildsCreator"
-import os from "os"
 import { AvailableMockObjects  } from "../../../native-modules-prebuilds-creator/tests/Test.Utilities/MockObjects/MockObjectRegister"
 import { TestMockObjectHelper } from "../../../native-modules-prebuilds-creator/tests/Test.Utilities/Helper"
-import nodeAbi from 'node-abi'
 
 export class PatcherTestHelper{
 
@@ -101,60 +94,5 @@ export class PatcherTestHelper{
         fsExtra.writeFileSync(path.join(dist, "prebuild-manifest.json"), JSON.stringify(mockManifest, null, 4))
     }
 
-    // static async BuildMockProject(packageDetails:any){
-    //     let packageJson = JSON.parse(fsExtra.readFileSync(path.join(packageDetails.path, "package.json")).toString())
 
-    //     const packageItem:IPackageItem = new PackageItem( {
-    //         packageName: packageJson.name,
-    //         version: packageJson.version
-    //     }, {
-    //         arch: os.arch(),
-    //         platform: os.platform(),
-    //         targets: [],
-    //         ...(packageDetails.prebuildify || {})
-    //     })
-    //     .SetSourcePath(packageDetails.path)
-    //     .SetOtherPackageDetails({
-    //         tarball_url: "",
-    //         id:`${packageJson.name}@${packageJson.version}`,
-    //         version: packageJson.version
-    //     })
-    //     .SetPackageJson(packageJson)
-                                
-          
-                                
-    //     await new PreBuildifyBuilder({}).Prebuildifier(packageItem)
-    //     return packageItem
-    // }
-
-    // static async CreatePrebuildsProject(packageDetails:any[], dist:string){
-
-    //     let packageItems:IPackageItemsToProcess = {}
-    //     for (const packageDetail of packageDetails){
-    //         const packageItem:IPackageItem = await this.BuildMockProject(packageDetail)
-    //         packageItems[packageItem.packageName] = packageItem
-    //     }
-        
-    //     new PreBuildsCopier(packageItems).Copy(dist)
-    //     return packageItems
-    // }
-
-    // static PackageItemToPactherDetails(packageToProcess:IPackageItemsToProcess,  dist:string){
-    //     return Object.values(packageToProcess).reduce((pv:any, p:IPackageItem) => {
-    //         const prebuildsPath:string =  path.join(dist, "prebuilds", `${p.packageName}@${p.packageVersion}`)
-    //         const prebuildsArchAndPlatformPath:string =  path.join( p.prebuildPaths, `${p.mergedPrebuildifyOptions.platform}-${p.mergedPrebuildifyOptions.arch}`)
-    //         const prebuildsArchAndPlatformAbiPath = path.join(prebuildsArchAndPlatformPath, 
-    //                                                             // @ts-ignore
-    //                                                           `${nodeAbi.getAbi(p.mergedPrebuildifyOptions.targets[0].target, p.mergedPrebuildifyOptions.targets[0].runtime)}.node`)
-    //         pv[p.packageName] = {
-    //             name: p.packageName,
-    //             version: p.packageVersion,
-    //             path: p.sourcePath,
-    //             prebuildsPath,
-    //             prebuildsArchAndPlatformPath,
-    //             prebuildsArchAndPlatformAbiPath
-    //         }
-    //         return pv
-    //     }, {})
-    // }
 }  
