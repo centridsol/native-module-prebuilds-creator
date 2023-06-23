@@ -67,8 +67,8 @@ builder.build({
 
 ## Documentation
 
-* For the prebuilds creator, see [Native Module Prebuild Creator](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher)
-* For the prebuilds patcher, see [Native Module Prebuild Patcher](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-creator)
+* For the prebuilds creator, see [Native Module Prebuild Creator](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-creator)
+* For the prebuilds patcher, see [Native Module Prebuild Patcher](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher)
 
 ## Why?
 

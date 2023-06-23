@@ -81,8 +81,7 @@ prebuilder.Create().then(()=> {
 
 ## Prebuilds Patcher
 
-When the prebuilds folder is created, it has a compiled version of the prebuilds pathcher (See [home](https://gitlab.com/centridpub/native-module-prebuilds-creator)).
-This version also has a CLI interface (as complare to the standalon prebuld-pactcher package). Options are highlighed below:-
+When the prebuilds folder is created, it has a compiled version of the prebuilds pathcher (See [home](https://gitlab.com/centridpub/native-module-prebuilds-creator)). This version also wraps the appropiate `prebuild-manifest.json`, and returns a instatiated version of the PrebuildsPatcher when imported. In addtion it also has a CLI interface which you can use to patch. Options are highlighed below:-
 
 ### Comands: 
 | CLI   | Description   |  Example  |   |
@@ -104,3 +103,5 @@ This version also has a CLI interface (as complare to the standalon prebuld-pact
 | --onPatchFail  | `error`  | What to do when a patch fail. `Options: 'error' or 'skip'` Note: On error all patchs are reverted (i.e revertPatchs is called)  |   |  patchAll, patchSpecific |
 | --onNoPrebuildsFound  | `skip` | When no prebuilds found for native module currently installed for your project `Options: 'error' or 'skip'`  |   | patchAll, patchSpecific   |
 | --projectPath  | determines from `process.cwd()` | Project path which the patch will be applied to |   |  patchAll, patchSpecific, revertPatchs |
+
+To use the patcher programatically, please see [Native Module Prebuild Patcher](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher)
