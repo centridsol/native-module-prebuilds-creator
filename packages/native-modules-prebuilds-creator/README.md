@@ -101,11 +101,12 @@ When the prebuilds folder is created, it has a compiled version of the prebuilds
 
 ### Commands:
 
-| CLI | Description | Example | |
-| --- | --- | --- | --- |
-| patchAll | Patch all native modules in your current project using the generated prebuilds. This will look for all the native modules in your current project, check if applicable prebuilds are available, and patch as appropriate | | |
-| patchSpecific | Similar to patchAll, but allows you to specify which package you want to patch | `--patchSpecific "drivelist@9.2.4"` | |
-| revertPatches | Revert patched native modules | | |
+| CLI | Description |  |
+| --- | --- | --- | 
+| patchAll | Patch all native modules in your current project using the generated prebuilds. This will look for all the native modules in your current project, check if applicable prebuilds are available, and patch as appropriate | | 
+| patchSpecific | Similar to patchAll, but allows you to specify which package you want to patch |  
+| revertPatches | Revert patched native modules | | 
+
 
 ### Options:
 
