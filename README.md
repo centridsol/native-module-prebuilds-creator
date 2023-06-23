@@ -40,7 +40,7 @@ myGeneratedPrebuilds/
             └── electron.abi116.node
 ```
 
-As seen from the above example, the generated package includes the compiled version of the sub-package [native-module-prebuilds-patcher](). This allows you to automatically patch applicable native Node.js modules in your current project with the appropriate runtime while building (and then revert the patches when done). For instance, if you are using [electron-builder](https://github.com/electron-userland/electron-builder), your configuration can look something like this:
+As seen from the above example, the generated package includes the compiled version of the sub-package [native-module-prebuilds-patcher](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher). This allows you to automatically patch applicable native Node.js modules in your current project with the appropriate runtime while building (and then revert the patches when done). For instance, if you are using [electron-builder](https://github.com/electron-userland/electron-builder), your configuration can look something like this:
 
 ```javascript
 const builder = require("electron-builder")
