@@ -1,9 +1,7 @@
 # Native Module Prebuilds Creator
-#### Create prebuilds for multipe native node modules
+#### Create prebuilds for multiple native Node.js modules
 
-This package allow you to create prebuilds for multiple native node modules that can then be later on used within you projects. 
-It does this by fetching specified node modules (native), building them (using [prebuildify](https://github.com/prebuild/prebuildify)), and then creating a package with all the prebuilds. 
-An example of the prebuilds package created is below
+This package allows you to create prebuilds for multiple native Node.js modules that can later be used in your projects. It accomplishes this by fetching specified native modules, building them using [prebuildify](https://github.com/prebuild/prebuildify), and creating a package with all the prebuilds. Below is an example of the structure of the prebuilds package:
 
 ```bash
 myGeneratedPrebuilds/
@@ -42,9 +40,7 @@ myGeneratedPrebuilds/
             └── electron.abi116.node
 ```
 
-As can be seen from the above, the generated package will include the compiled version of the sub-package [native-module-prebuilds-patcher](). 
-This will allow you to auto patch applicable native node modules in your current with the applicable runtime whilst building (and then revert the patchs when done). 
-For instance if you are using [electron-builder](https://github.com/electron-userland/electron-builder) your configuration can look something like this
+As seen from the above example, the generated package includes the compiled version of the sub-package [native-module-prebuilds-patcher](). This allows you to automatically patch applicable native Node.js modules in your current project with the appropriate runtime while building (and then revert the patches when done). For instance, if you are using [electron-builder](https://github.com/electron-userland/electron-builder), your configuration can look something like this:
 
 ```javascript
 const builder = require("electron-builder")
@@ -53,11 +49,11 @@ const myGeneratedPrebuilds = require("./myGeneratedPrebuilds")
 builder.build({
   targets: Platform.WINDOWS.createTarget(),
   config: {
-     beforeBuild : function(context) {
+    beforeBuild: function(context) {
       return myGeneratedPrebuilds.PatchAll(context.arch, context.platform.nodeName, `electron@${context.electronVersion}`)
     },
-    afterAllArtifactBuild: function(){
-        myGeneratedPrebuilds.RevertPatchs()
+    afterAllArtifactBuild: function() {
+      myGeneratedPrebuilds.RevertPatches()
     }
   }
 })
@@ -67,36 +63,29 @@ builder.build({
 .catch((error) => {
   console.error(error)
 })
-
 ```
 
+## Documentation
 
-
-## Documetation
-
-* For the prebuilds creator see - [Native Module Prebuild Creator]()
-* For the prebuilds patcher see - [Native Module Prebuild Patcher]()
-
+* For the prebuilds creator, see [Native Module Prebuild Creator](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher)
+* For the prebuilds patcher, see [Native Module Prebuild Patcher](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-creator)
 
 ## Why?
 
-Some might be wondering, why?, as packages are usually built on install (and tools like electron-rebuilder can do it for you). Well, this reason for this is 2 fold:-
+Some might be wondering, why? Packages are usually built on installation (and tools like electron-rebuilder can do it for you). Well, the reason for this is primarily twofold:
 
-1. Making your build process more deterministic - When working on a project locally, and as a single developer, the above reason is quite valid. However, when you are working on a team, and have CI process you might want to ensure that everyone running you app/project is using the same baniaries. This allows you produced them centrally, and distributed in your team/shared with you CI process. This thinking is partly why tool like prebuildify/prebuild-install exist. However in those tool, the onus is on the package maintainer to create the binaries .
-2. Making your build process platform agnostic - Native module are usually built against the environement you building them in (platform/arch etc). Hence banaries build on linux, will most likely not work in windows and vice-versa. This package attempts to locate the applicable binaries for your specified target environement and use/patch those when packaging your application.  This means you can package your application for Windows using Linux (given than your generated prebuilds folder contains the applicable binaries). This is particularly useful for CI processes are they usually rely on some variant of linux. 
+1. Making your build process more deterministic: When working on a project locally as a single developer, the above reason is quite valid. However, when you are working in a team and have a CI process, you might want to ensure that everyone building the app/project is using the same binaries. This allows you to produce them centrally and distribute them in your team or share them with your CI process. This thinking is partly why tools like prebuildify/prebuild-install exist. However, in those tools, the responsibility falls on the package maintainer to create the binaries.
+2. Making your build process platform agnostic: Native modules are usually built against the environment in which they are built (platform/arch, etc.). Therefore, binaries built on Linux will most likely not work on Windows and vice versa. This package attempts to locate the appropriate binaries for your specified target environment and use/patch them when packaging your application. This means you can package your application for Windows using Linux (given that your generated prebuilds folder contains the appropriate binaries). This is particularly useful for CI processes as they usually rely on some variant of Linux.
 
+## Future Improvements and Other Notes
 
-## Future improvements and other notes
-
-* Most of the operations in these packages are run synchronosly, of which performance gains can be made running most  of these operations asynchronusly. This will be considered for future releases
-
+* Most of the operations in these packages are run synchronously, and performance gains can be made by running most of these operations asynchronously. This will be considered for future releases.
 
 ## Contributing
 
-Native Module Prebuilds Creator is an opensource project and contributions are valued. If there is a bug fix please create a pull request explain what the bug is, how you fixed and tested it.
+Native Module Prebuilds Creator is an open-source project, and contributions are valued. If you have a bug fix, please create a pull request explaining what the bug is, how you fixed it, and how you tested it.
 
-If it's a new feature, please add it as a issue with the label enhancement, detailing the new feature and why you think it's needed. Will discuss it there and once it's agreed upon you can create a pull request with the details highlighted above. 
-
+If it's a new feature, please add it as an issue with the "enhancement" label, providing details about the new feature and why you think it's needed. We will discuss it there, and once it's agreed upon, you can create a pull request with the highlighted details.
 ## Authors
 
 * **Chido Warambwa** - *Initial Work* - [chidow@centridsol.tech](mailto://chidow@centridsol.tech) 
