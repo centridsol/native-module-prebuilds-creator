@@ -172,7 +172,7 @@ export class PreBuildifyBuilder{
 
     async BuildAll(){
 
-        for (const [packageName, packageDetails] of Object.entries(this.packagesToProcess)){
+        for (const packageDetails of Object.values(this.packagesToProcess)){
             new Prebuilder(packageDetails).Prepare()
             await this.Prebuildifier(packageDetails)
         }
@@ -189,7 +189,7 @@ export class PreBuildifyBuilder{
         return new Promise((resolve:any, reject:any) => {
             try{
                 preBuildify({...packageToProcess.mergedPrebuildifyOptions,
-                                nodeGyp: '/home/chidow/CentridProjects/OpensourceProjects/theia-installer-creator/node_modules/node-gyp/bin/node-gyp.js',
+                                nodeGyp: eval("require.resolve('node-gyp/bin/node-gyp.js')"),
                                 out: packageToProcess.sourcePath,
                                 cwd: packageToProcess.sourcePath}, (err:any) => {
                     if (err){
@@ -211,7 +211,6 @@ export class PreBuildifyBuilder{
             catch(err:any){
                 reject(err)
             }
-            
         })
     }
 }

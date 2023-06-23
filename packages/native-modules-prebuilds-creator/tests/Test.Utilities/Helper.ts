@@ -1,7 +1,7 @@
 
 import fsExtra from "fs-extra"
 import { MockObjectRegister } from "./MockObjects/MockObjectRegister"
-import { TestHelper } from "../../../testUtils/Helper"
+import { TestHelper } from "../../../../testUtils/Helper"
 import os from "os"
 import path from "path"
 import { PackageItem } from "../../src/PackageItem"

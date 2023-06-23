@@ -6,6 +6,6 @@ module.exports = {
     "^.+\\.(js|jsx)?$": ['babel-jest'] 
   },
   roots: ['./'],
-  globalSetup: "../testUtils/TestStarter.ts",
+  globalSetup: "../../testUtils/TestStarter.ts",
   modulePathIgnorePatterns: ["<rootDir>/tests/Test.Utilities/MockObjects"]
 };

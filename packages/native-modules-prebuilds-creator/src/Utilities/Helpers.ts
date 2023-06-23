@@ -17,7 +17,7 @@ export class Helpers{
     }
 
     static InstallDependencies(packageName:string, packagePath:string){
-        const result = spawnSync("yarn", ["install", "--ignore-scripts"], {stdio: "inherit", cwd: packagePath})
+        const result = spawnSync("npm", ["install", "--ignore-scripts"], {stdio: "inherit", cwd: packagePath})
         if (result.status != 0){
             throw new Error(`An error occured trying to install dependencies for the package '${packageName}'. \n\nError message:- ${result.stderr.toString()}`)
         }

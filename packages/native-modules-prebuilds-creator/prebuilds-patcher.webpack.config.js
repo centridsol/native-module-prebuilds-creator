@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: './src/PactherWrapper.ts',
   output: {
-    filename: 'prebuilds-pacther.js',
+    filename: 'prebuild-patcher.js',
     path: path.resolve(__dirname, 'src/Operations/templates'),
     libraryTarget: "commonjs"
   },

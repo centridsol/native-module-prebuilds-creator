@@ -1,4 +1,4 @@
-import { PackageItem } from  "../../src/PackageItem"
+
 import { PreBuildifyBuilder, Prebuilder } from "../../src/Operations/PreBuildifyBuilder"
 import { TestMockObjectHelper } from "../Test.Utilities/Helper"
 import { AvailableMockObjects } from "../Test.Utilities/MockObjects/MockObjectRegister"
@@ -6,7 +6,7 @@ import path from "path"
 import fsExtra from "fs-extra"
 import { IPackageItem, IPackageItemsToProcess, IPreBuildifyOptions } from "../../src/IPrebuildsCreator"
 import nodeAbi, { Target } from 'node-abi'
-import { TestHelper } from "../../../testUtils/Helper"
+import { TestHelper } from "../../../../testUtils/Helper"
 
 describe("Prebuildify builder", () => {
 

@@ -1,4 +1,4 @@
-import { TestHelper } from "../../../testUtils/Helper"
+import { TestHelper } from "../../../../testUtils/Helper"
 import { IPackageItem, IPackageItemsToProcess, IPreBuildifyOptions } from "../../src/IPrebuildsCreator"
 import { PreBuildifyBuilder } from "../../src/Operations/PreBuildifyBuilder"
 import { PreBuildsCopier } from "../../src/Operations/PreBuildsCopier"
@@ -8,7 +8,7 @@ import nodeAbi, { Target } from 'node-abi'
 import fs from "fs"
 import path from "path"
 import os from "os"
-import { PackageItem } from "../../src/PackageItem"
+import webpack from "webpack"
 
 describe("Prebuilds copier tests", () => {
 
@@ -20,10 +20,21 @@ describe("Prebuilds copier tests", () => {
 
     let sampleTargets:any[]
 
-    beforeAll( () => {
+    beforeAll( async () => {
         sampleTargets = [...nodeAbi.supportedTargets.filter((t:Target) => t.runtime === "node").slice(-1),
                          ...nodeAbi.supportedTargets.filter((t:Target) => t.runtime === "electron").slice(-1)]
-    })
+
+        await new Promise((resolve:any, reject:any)=> {
+            webpack(require(path.join(__dirname, "../../prebuilds-patcher.webpack.config.js"))).run((err:any)=>{
+                if(err){
+                    reject(err)
+                }else{
+                    resolve()
+                }
+            
+            })
+        })
+    }, 20000)
 
     const getPackagesToCopy = async (number:number) => {
 
@@ -79,6 +90,10 @@ describe("Prebuilds copier tests", () => {
     const assertManifestCreatedCorrectly = (packagesToCopy:IPackageItemsToProcess, output:string)=>{
         const prebuildManifestFile:string = path.join(output, "prebuild-manifest.json")
         expect(fs.existsSync(prebuildManifestFile)).toBeTruthy()
+
+        const patcherFile:string = path.join(output, "prebuild-patcher.js")
+        expect(fs.existsSync(patcherFile)).toBeTruthy()
+
         const generaedManifestJson = JSON.parse(fs.readFileSync(prebuildManifestFile).toString())
         expect(generaedManifestJson).toEqual(Object.values(packagesToCopy).reduce<any>((pv:any, cv:IPackageItem ) => {
             pv[cv.packageName] = {
@@ -106,7 +121,4 @@ describe("Prebuilds copier tests", () => {
 
     })
     
-    describe("Package pactcher tests", () => {
-
-    })
 })
