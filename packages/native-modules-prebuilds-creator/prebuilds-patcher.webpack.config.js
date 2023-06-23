@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/PactherWrapper.ts',
   output: {
     filename: 'prebuilds-pacther.js',
-    path: path.resolve(__dirname, 'src/templates'),
+    path: path.resolve(__dirname, 'src/Operations/templates'),
     libraryTarget: "commonjs"
   },
   mode: "none",

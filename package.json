@@ -1,17 +1,17 @@
 {
     "private": true,
-    "name": "@centrid/theia-installer-creator",
+    "name": "@centrid/native-modules-prebuilds-creator",
     "version": "1.0.0",
     "cnversion": "1.0.0",
-    "description": "Package for building/packaging a Apache theia project into an installer on different platforms",
+    "description": "Package for creating prebuilds for multiple native modules",
     "keywords": [
-        "theia",
-        "IDE",
-        "installer",
-        "electron-builder",
-        "platform-builder",
-        "packager",
-        "electron"
+        "prebuilt",
+        "binaries",
+        "prebuildfy",
+        "packages",
+        "native-modules",
+        "electron",
+        "bindings"
     ],
     "author": "Chido Warambwa <chidow@centridsol.tech>",
     "homepage": "",
@@ -23,5 +23,5 @@
         }
     ],
     "license": "SEE LICENSE IN license.md",
-    "workspaces": ["installer-creator", "native-modules-prebuilds-creator", "theia-native-modules-prebuilds", "native-modules-prebuilds-patcher"]
+    "workspaces": ["packages/*"]
 }

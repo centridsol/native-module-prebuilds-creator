@@ -22,6 +22,7 @@ export class PreBuildsCopier{
 
         if (!(packageItem.packageVersion in this.manifetsDetails[packageItem.packageName])){
             this.manifetsDetails[packageItem.packageName][packageItem.packageVersion] = {
+                // TODO: Normalise path for windows
                 prebuildPath
             }
         }
@@ -47,7 +48,12 @@ export class PreBuildsCopier{
         }
 
         fsExtra.writeFileSync(path.join(distFolder, PreBuildsCopier.PREBUILD_MANIFEST_FILENAME), JSON.stringify(this.manifetsDetails, null, 4) )
-        fsExtra.copyFileSync(path.join(__dirname, "prebuild-patcher.js"), path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME))
+        fsExtra.writeFileSync(path.join(distFolder, "package.js"), JSON.stringify({
+            private: true,
+            main: `./${PreBuildsCopier.PACTCHER_FILENAME}`
+        }, null, 4))
+        fsExtra.copyFileSync(path.join(__dirname, "templates", "prebuild-patcher.js"), path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME))
+        
     }
 
 
