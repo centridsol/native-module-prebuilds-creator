@@ -1,6 +1,5 @@
 import { IPackageItem, IPackageItemsToProcess, ISupportedTargetObj}  from "../IPrebuildsCreator"
 import { PrebuildifyWrapper } from "../Utilities/PrebuildifyWrapper/PrebuildifyWrapper"
-import isNative from 'is-native-module'
 import nodeAbi, { Target } from 'node-abi'
 import semver from 'semver'
 import path from 'path'
@@ -22,7 +21,7 @@ export class Prebuilder{
     }
 
     IsNativeModule(){
-        if (!isNative(this.packageToProcess.packageJson)){
+        if (!fs.existsSync(path.join(this.packageToProcess.sourcePath, "binding.gyp"))){
             console.warn(`The package ${this.packageToProcess.fullPackageName} does not seem to be a native module. Might not build successfully`)
             return false
         }

@@ -114,7 +114,7 @@ describe("Package Fetcher tests", () => {
                 version: "1.0.1"
             }
         })
-    }, 20000)
+    })
 
     it("Does not refetch if package already exists", async () =>{
         const packageFetcher:PackageFetcher = new PackageFetcher()

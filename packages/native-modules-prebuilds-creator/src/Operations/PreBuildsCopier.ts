@@ -22,8 +22,7 @@ export class PreBuildsCopier{
 
         if (!(packageItem.packageVersion in this.manifetsDetails[packageItem.packageName])){
             this.manifetsDetails[packageItem.packageName][packageItem.packageVersion] = {
-                // TODO: Normalise path for windows
-                prebuildPath
+                prebuildPath: prebuildPath.replace("\\","/")
             }
         }
     }

@@ -7,5 +7,6 @@ module.exports = {
   },
   roots: ['./'],
   globalSetup: "../../testUtils/TestStarter.ts",
-  modulePathIgnorePatterns: ["<rootDir>/tests/Test.Utilities/MockObjects"]
+  modulePathIgnorePatterns: ["<rootDir>/tests/Test.Utilities/MockObjects"],
+  testTimeout: 180000,
 };

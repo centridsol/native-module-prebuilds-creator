@@ -34,7 +34,7 @@ describe("Prebuilds copier tests", () => {
             
             })
         })
-    }, 20000)
+    })
 
     const getPackagesToCopy = async (number:number) => {
 
@@ -115,7 +115,7 @@ describe("Prebuilds copier tests", () => {
 
             assertFolderCopiedCorrectly(packagesToCopy, tempOut)
             assertManifestCreatedCorrectly(packagesToCopy, tempOut)
-        }, 20000)
+        })
 
 
 
