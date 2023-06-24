@@ -6,9 +6,11 @@ import { TestMockObjectHelper } from "../Test.Utilities/Helper"
 import { AvailableMockObjects } from "../Test.Utilities/MockObjects/MockObjectRegister"
 import nodeAbi, { Target } from 'node-abi'
 import fs from "fs"
+import fsExtra from "fs-extra"
 import path from "path"
 import os from "os"
 import webpack from "webpack"
+import lodash from "lodash"
 
 describe("Prebuilds copier tests", () => {
 
@@ -76,7 +78,7 @@ describe("Prebuilds copier tests", () => {
             const packagePrebuildFolder = path.join(prebuildsFolder, packageItem.fullPackageName)
             assertDirExists(packagePrebuildFolder)
 
-            const platformPath:string = path.join(packagePrebuildFolder, `${os.platform()}-${os.arch()}`)
+            const platformPath:string = path.join(packagePrebuildFolder, `${packageItem.mergedPrebuildifyOptions.platform}-${packageItem.mergedPrebuildifyOptions.arch}` )
             assertDirExists(platformPath)
 
             for (const napi_target of sampleTargets){
@@ -96,17 +98,24 @@ describe("Prebuilds copier tests", () => {
 
         const generaedManifestJson = JSON.parse(fs.readFileSync(prebuildManifestFile).toString())
         expect(generaedManifestJson).toEqual(Object.values(packagesToCopy).reduce<any>((pv:any, cv:IPackageItem ) => {
-            pv[cv.packageName] = {
-                [cv.packageJson.version] : {
-                    prebuildPath: `prebuilds/${cv.fullPackageName}`
-                }
+            if (!(cv.packageName in pv)){
+                pv[cv.packageName] ={}
             }
+
+            if (!(cv.packageJson.version in pv[cv.packageName])){
+                pv[cv.packageName][cv.packageJson.version] ={}
+            }
+
+            pv[cv.packageName][cv.packageJson.version] = {
+                prebuildPath: `prebuilds/${cv.fullPackageName}`
+            }
+            
             return pv
         }, {}))
     }
     
     
-    describe("Main operations tests", () => {
+    describe.skip("Main operations tests", () => {
 
         it("Copiers the prebuild folders correctly", async () => {
             const tempOut:string = getTempOut()
@@ -117,8 +126,86 @@ describe("Prebuilds copier tests", () => {
             assertManifestCreatedCorrectly(packagesToCopy, tempOut)
         })
 
+    })
+
+    describe("prebuilds merging tests", () => {
+
+        const preForTests = async () => {
+            const tempOut:string = getTempOut()
+            const packagesToCopy:IPackageItemsToProcess = await getPackagesToCopy(2)
+
+            new PreBuildsCopier(packagesToCopy).Copy(tempOut)
+
+            assertFolderCopiedCorrectly(packagesToCopy, tempOut)
+            assertManifestCreatedCorrectly(packagesToCopy, tempOut)
+
+            return {packagesToCopy, tempOut}
+        }
+
+        it("it updates with new packages", async () => {
+
+            const tempOut:string = getTempOut()
+            const packagesToCopy:IPackageItemsToProcess = await getPackagesToCopy(2)
+
+            const firstPackage:any = lodash.pick(packagesToCopy, ["simple-native1"])
+            new PreBuildsCopier(firstPackage).Copy(tempOut)
+
+            assertFolderCopiedCorrectly(firstPackage, tempOut)
+            assertManifestCreatedCorrectly(firstPackage, tempOut)
+
+            const secondPackage:any = lodash.pick(packagesToCopy, ["simple-native2"])
+            new PreBuildsCopier(secondPackage).Copy(tempOut)
+
+            assertFolderCopiedCorrectly(packagesToCopy, tempOut)
+            assertManifestCreatedCorrectly(packagesToCopy, tempOut)
+        
+        })
+
+        it("it updates with new package version", async () => {
+           
+            let {packagesToCopy, tempOut} = await preForTests()
 
 
+            // Note: Id is not used to generate prebuilds, but actual package details
+            packagesToCopy["simple-native2@2.0.0"] = lodash.cloneDeep(packagesToCopy["simple-native2"])
+
+            packagesToCopy["simple-native2@2.0.0"].SetOtherPackageDetails({tarball_url: "",
+                id:"simple-native2@2.0.0",
+                version: "2.0.0"})
+
+            packagesToCopy["simple-native2@2.0.0"].SetPackageJson({name: "simple-native2", version: "2.0.0"})
+
+            new PreBuildsCopier(lodash.pick(packagesToCopy, ["simple-native2@2.0.0"])).Copy(tempOut)
+
+           assertFolderCopiedCorrectly(packagesToCopy, tempOut)
+           assertManifestCreatedCorrectly(packagesToCopy, tempOut)
+        })
+
+        it("it updates with new platforms", async() => {
+            
+            let {packagesToCopy, tempOut} = await preForTests()
+
+            // Note: Id is not used to generate prebuilds, but actual package details
+            packagesToCopy["simple-native2@1.0.0"] = lodash.cloneDeep(packagesToCopy["simple-native2"])
+
+
+            const mockWindowsPrebuilds:string =  path.join(packagesToCopy["simple-native2@1.0.0"].prebuildPaths, "../", "winPrebuilds")
+            fsExtra.copySync(packagesToCopy["simple-native2@1.0.0"].prebuildPaths, mockWindowsPrebuilds)
+
+            fsExtra.renameSync(path.join(mockWindowsPrebuilds, `${os.platform()}-${os.arch()}`), path.join(mockWindowsPrebuilds, `win32-${os.arch()}`))
+
+            packagesToCopy["simple-native2@1.0.0"].SetPrebuildPath(mockWindowsPrebuilds);
+
+            (packagesToCopy["simple-native2@1.0.0"] as any)["_mergedPrebuildifyOptions"] = {
+                arch: "x64",
+                platform: "win32"
+            }
+
+            new PreBuildsCopier(lodash.pick(packagesToCopy, ["simple-native2@1.0.0"])).Copy(tempOut)
+
+            assertFolderCopiedCorrectly(packagesToCopy, tempOut)
+            assertManifestCreatedCorrectly(packagesToCopy, tempOut)
+        })
     })
     
 })

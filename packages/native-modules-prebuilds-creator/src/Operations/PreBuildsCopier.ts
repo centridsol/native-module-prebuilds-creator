@@ -1,6 +1,8 @@
 import {  IPackageItem, IPackageItemsToProcess } from "../IPrebuildsCreator"
 import fsExtra from "fs-extra"
 import path from "path"
+import mergedirs from "merge-dirs"
+import lodash from "lodash"
 
 export class PreBuildsCopier{
 
@@ -38,15 +40,20 @@ export class PreBuildsCopier{
                 continue
             }
             const outputPath:string = path.join(prebuildPath, `${packageItem.packageName}@${packageItem.packageVersion}`)
-
+            
             if (!fsExtra.existsSync(outputPath)){
                 fsExtra.mkdirSync(outputPath, {recursive: true})
             }
-            fsExtra.copySync(packageItem.prebuildPaths, outputPath)
+            mergedirs(packageItem.prebuildPaths, outputPath, 'overwrite')
             this.UpdatePrebuildManifest(packageItem, path.relative(distFolder, outputPath))
         }
 
-        fsExtra.writeFileSync(path.join(distFolder, PreBuildsCopier.PREBUILD_MANIFEST_FILENAME), JSON.stringify(this.manifetsDetails, null, 4) )
+        const prebuildManifestPath:string = path.join(distFolder, PreBuildsCopier.PREBUILD_MANIFEST_FILENAME)
+        if (fsExtra.existsSync(prebuildManifestPath)){
+            this.manifetsDetails = lodash.merge(this.manifetsDetails, JSON.parse(fsExtra.readFileSync(prebuildManifestPath).toString()))
+        }
+
+        fsExtra.writeFileSync(prebuildManifestPath, JSON.stringify(this.manifetsDetails, null, 4) )
         fsExtra.writeFileSync(path.join(distFolder, "package.js"), JSON.stringify({
             private: true,
             main: `./${PreBuildsCopier.PACTCHER_FILENAME}`
