@@ -1,5 +1,5 @@
 import { IPackageItem, IPackageItemsToProcess, ISupportedTargetObj}  from "../IPrebuildsCreator"
-import preBuildify from "prebuildify"
+import { PrebuildifyWrapper } from "../Utilities/PrebuildifyWrapper/PrebuildifyWrapper"
 import isNative from 'is-native-module'
 import nodeAbi, { Target } from 'node-abi'
 import semver from 'semver'
@@ -188,24 +188,23 @@ export class PreBuildifyBuilder{
         
         return new Promise((resolve:any, reject:any) => {
             try{
-                preBuildify({...packageToProcess.mergedPrebuildifyOptions,
-                                nodeGyp: eval("require.resolve('node-gyp/bin/node-gyp.js')"),
-                                out: packageToProcess.sourcePath,
-                                cwd: packageToProcess.sourcePath}, (err:any) => {
-                    if (err){
-                        reject(err)
-                    }
-                    else{
-                        const prebuildsPath = path.join(packageToProcess.sourcePath, "prebuilds")
-                        if (!fs.existsSync(prebuildsPath)){
-                            reject("Even though the build completed successfully, cannot seem to find 'prebuild' folder")
-                        }
-                        else{
-                            packageToProcess.SetPrebuildPath(prebuildsPath)
-                            resolve()
-                        }
+                PrebuildifyWrapper({...packageToProcess.mergedPrebuildifyOptions,
+                                    out: packageToProcess.sourcePath,
+                                    cwd: packageToProcess.sourcePath}, (err:any) => {
+                                        if (err){
+                                            reject(err)
+                                        }
+                                        else{
+                                            const prebuildsPath = path.join(packageToProcess.sourcePath, "prebuilds")
+                                            if (!fs.existsSync(prebuildsPath)){
+                                                reject("Even though the build completed successfully, cannot seem to find 'prebuild' folder")
+                                            }
+                                            else{
+                                                packageToProcess.SetPrebuildPath(prebuildsPath)
+                                                resolve()
+                                            }
 
-                    }
+                                    }
                 })
             }
             catch(err:any){

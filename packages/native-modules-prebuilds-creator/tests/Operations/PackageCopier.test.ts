@@ -1,5 +1,5 @@
 import { TestHelper } from "../../../../testUtils/Helper"
-import { IPackageItem, IPackageItemsToProcess, IPreBuildifyOptions } from "../../src/IPrebuildsCreator"
+import { IPackageItem, IPackageItemsToProcess } from "../../src/IPrebuildsCreator"
 import { PreBuildifyBuilder } from "../../src/Operations/PreBuildifyBuilder"
 import { PreBuildsCopier } from "../../src/Operations/PreBuildsCopier"
 import { TestMockObjectHelper } from "../Test.Utilities/Helper"

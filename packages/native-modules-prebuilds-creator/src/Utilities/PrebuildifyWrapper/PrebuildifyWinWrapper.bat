@@ -1,0 +1,2 @@
+@echo off
+node %NM_PREBUILDS_CREATOR_NODE_GYP_PATH% %*

@@ -24,6 +24,8 @@
     ],
     "license": "SEE LICENSE IN license.md",
     "dependencies": {
+        "@types/cross-spawn": "^6.0.2",
+        "cross-spawn": "^7.0.3",
         "decompress": "^4.2.1",
         "fs-extra": "^11.1.1",
         "is-native-module": "^1.1.3",
