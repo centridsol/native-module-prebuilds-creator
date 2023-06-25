@@ -21,11 +21,11 @@ prepare:
   artifacts:
     paths: 
     - node_modules/
-    - native-modules-prebuilds-patcher/.npmrc
-    - native-modules-prebuilds-patcher/.accesstoken
+    - packages/native-modules-prebuilds-patcher/.npmrc
+    - packages/native-modules-prebuilds-patcher/.accesstoken
     expire_in: 30 mins
     reports:
-      dotenv: native-modules-prebuilds-patcher/build.env
+      dotenv: packages/native-modules-prebuilds-patcher/build.env
 
 test:
   stage: test
