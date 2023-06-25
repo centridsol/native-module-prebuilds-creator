@@ -56,6 +56,8 @@ deploy-to-self-host:
   needs: 
   - job: build
     artifacts: true
+  - job: prepare
+    artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"
     DEPLOY_TO_NPM: "false"
@@ -68,6 +70,8 @@ deploy-to-npm:
   extends: .base_npm_package
   needs: 
   - job: build
+    artifacts: true
+  - job: prepare
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "false"
