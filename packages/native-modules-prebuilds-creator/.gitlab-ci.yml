@@ -1,5 +1,5 @@
 before_script:
-- cd native-modules-prebuilds-creator
+- cd packages/native-modules-prebuilds-creator
 
 
 include:
