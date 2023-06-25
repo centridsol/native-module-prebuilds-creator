@@ -62,7 +62,8 @@ export class PreBuildsCopier{
         fsExtra.writeFileSync(prebuildManifestPath, JSON.stringify(this.manifetsDetails, null, 4) )
         fsExtra.writeFileSync(path.join(distFolder, "package.js"), JSON.stringify({
             private: true,
-            main: `./${PreBuildsCopier.PACTCHER_FILENAME}`
+            main: `./${PreBuildsCopier.PACTCHER_FILENAME}`,
+            bin: `./${PreBuildsCopier.PACTCHER_FILENAME}`
         }, null, 4))
         fsExtra.copyFileSync(path.join(__dirname, "templates", "prebuild-patcher.js"), path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME))
         this.logger.info(`Completed creating prebuilds folder: Location './${path.relative(process.cwd(), distFolder)}'`)
