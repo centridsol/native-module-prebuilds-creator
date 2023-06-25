@@ -48,7 +48,7 @@ build:
     - yarn run build
   artifacts:
     paths: 
-    - dist/
+    - packages/native-modules-prebuilds-patcher/dist/
 
 deploy-to-self-host:
   stage: deploy-to-self-host
