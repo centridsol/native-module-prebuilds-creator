@@ -3,7 +3,8 @@ import fsExtra from "fs-extra"
 import path from "path"
 import mergedirs from "merge-dirs"
 import lodash from "lodash"
-
+import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
+import { Consts } from "../Utilities/Consts"
 export class PreBuildsCopier{
 
     static PREBUILD_MANIFEST_FILENAME = "prebuild-manifest.json"
@@ -11,10 +12,12 @@ export class PreBuildsCopier{
 
     private packagesToCopy:IPackageItemsToProcess 
     private manifetsDetails:any 
+    private logger:any
 
     constructor(packagesToCopy:IPackageItemsToProcess){
         this.packagesToCopy = packagesToCopy
         this.manifetsDetails = {}
+        this.logger= SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.COPIER)
     }
 
     UpdatePrebuildManifest(packageItem:IPackageItem, prebuildPath:string){
@@ -29,7 +32,9 @@ export class PreBuildsCopier{
         }
     }
 
-    Copy(distFolder:string){
+    Copy(distFolder:string="./NMPrebuilds"){
+        this.logger.info(`Copying prebuilds folders`)
+        distFolder = path.isAbsolute(distFolder) ? distFolder : path.resolve(process.cwd(), distFolder)
 
         const prebuildPath:string = path.join(distFolder, "prebuilds")
         for(const packageItem of Object.values(this.packagesToCopy)){
@@ -53,13 +58,16 @@ export class PreBuildsCopier{
             this.manifetsDetails = lodash.merge(this.manifetsDetails, JSON.parse(fsExtra.readFileSync(prebuildManifestPath).toString()))
         }
 
+        this.logger.info(`Generating prebuilds manifest files`)
         fsExtra.writeFileSync(prebuildManifestPath, JSON.stringify(this.manifetsDetails, null, 4) )
         fsExtra.writeFileSync(path.join(distFolder, "package.js"), JSON.stringify({
             private: true,
             main: `./${PreBuildsCopier.PACTCHER_FILENAME}`
         }, null, 4))
         fsExtra.copyFileSync(path.join(__dirname, "templates", "prebuild-patcher.js"), path.join(distFolder, PreBuildsCopier.PACTCHER_FILENAME))
-        
+        this.logger.info(`Completed creating prebuilds folder: Location './${path.relative(process.cwd(), distFolder)}'`)
+
+        return prebuildPath
     }
 
 

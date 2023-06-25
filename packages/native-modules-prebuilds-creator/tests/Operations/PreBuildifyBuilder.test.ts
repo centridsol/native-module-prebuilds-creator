@@ -6,7 +6,7 @@ import path from "path"
 import fsExtra from "fs-extra"
 import { IPackageItem, IPackageItemsToProcess, IPreBuildifyOptions } from "../../src/IPrebuildsCreator"
 import nodeAbi, { Target } from 'node-abi'
-import { TestHelper } from "../../../../testUtils/Helper"
+import { TestHelper } from "../../../../Shared/TestUtils/Helper"
 import os from "os"
 
 describe("Prebuildify builder", () => {

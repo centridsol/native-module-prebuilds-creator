@@ -5,18 +5,21 @@ import decompress from "decompress"
 import { Consts } from "../Utilities/Consts"
 import { Helpers } from "../Utilities/Helpers"
 import { IPackageItem, IPackageItemsToProcess } from "../IPrebuildsCreator"
+import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
 
 
 export class PackageFetcher{
     private tempOutDir:string
     private tempDowloadFolder:string
     private tempExtractFolder:string
+    private logger:any
     
     constructor(){
         this.tempOutDir = path.join(os.tmpdir(), Consts.TEMP_DIR_NAME)
         this.tempDowloadFolder = path.join(this.tempOutDir, "download")
         this.tempExtractFolder = path.join(this.tempOutDir, "extract")
-        console.log(`Using temp directory '${this.tempOutDir}'`)
+        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.FETECHER)
+        this.logger.info(`Using temp directory '${this.tempOutDir}'`)
     }
 
     async Fetch(packageToProcess:IPackageItemsToProcess){
@@ -27,20 +30,20 @@ export class PackageFetcher{
             const downloadFolderPath:string = path.join(this.tempDowloadFolder, Helpers.MakeNameSafe(packageTP.fullPackageName))
 
             if (this.CheckIfAlreadyFetched(downloadFolderPath, packageTP)){
-                console.log(`Package ${packageTP.fullPackageName} already fetched. Skipping refetching`)
+                this.logger.info(`Package ${packageTP.fullPackageName} already fetched. Skipping refetching`)
             }
             else{
-                console.log(`Fetching ${packageTP.fullPackageName}...`)
+                this.logger.info(`Fetching ${packageTP.fullPackageName}...`)
                 if (!fsExtra.existsSync(downloadFolderPath)){
                     fsExtra.mkdirSync(downloadFolderPath, {recursive: true})
                 }
                 Helpers.SpwanFetchPackage(packageTP.fullPackageName, downloadFolderPath)
             }
 
-            console.log(`Extracting ${packageTP.fullPackageName}...`)
+            this.logger.info(`Extracting ${packageTP.fullPackageName}...`)
             const extractedPath:string = await this.ExtractPackage(downloadFolderPath, packageTP)
 
-            console.log(`Installing depencies for ${packageTP.fullPackageName}`)
+            this.logger.info(`Installing depencies for ${packageTP.fullPackageName}`)
             Helpers.InstallDependencies(packageTP.fullPackageName, extractedPath)
 
             packageTP.SetSourcePath(extractedPath)

@@ -20,5 +20,8 @@
     "baseUrl": ".",
     "downlevelIteration": true,
   },
-  "include": ["src/*"]
+  "include": ["src/*", "./Shared"],
+  "ts-node": {
+    "files": true
+  },
 }

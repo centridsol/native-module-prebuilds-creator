@@ -4,25 +4,41 @@ import nodeAbi, { Target } from 'node-abi'
 import semver from 'semver'
 import path from 'path'
 import fs from 'fs'
-
+import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
+import { Consts } from "../Utilities/Consts"
+import lodash from "lodash"
+import os from "os"
 export class Prebuilder{
     private packageToProcess:IPackageItem
     private availableNodeApiTarget:any
+    private logger:any
 
     constructor(packageToProcess: IPackageItem){
         this.packageToProcess = packageToProcess
         this.availableNodeApiTarget = nodeAbi.supportedTargets.slice(0)
+        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.BUILDER)
     }
 
     Prepare(){
         this.IsNativeModule()
+        this.ValidateArchAndPlatform()
         this.SetSupportedTargetDetails()
         this.ValidateAndSetPackageTargets()
     }
 
+    private ValidateArchAndPlatform(){
+        if (os.platform() !== this.packageToProcess.mergedPrebuildifyOptions.platform){
+            throw new Error(`Can't cross build. Current platfom:- ${os.platform()}. Target platform:- ${this.packageToProcess.mergedPrebuildifyOptions.platform}`)
+        }
+
+        if (!(['arm', 'arm64', 'ia32', 'mips', 'mipsel', 'ppc', 'ppc64', 's390', 's390x', 'x64'].includes(this.packageToProcess.mergedPrebuildifyOptions.arch))){
+            throw new Error(`Unknown architecture '${this.packageToProcess.mergedPrebuildifyOptions.arch}'`)
+        }
+    }
+
     IsNativeModule(){
         if (!fs.existsSync(path.join(this.packageToProcess.sourcePath, "binding.gyp"))){
-            console.warn(`The package ${this.packageToProcess.fullPackageName} does not seem to be a native module. Might not build successfully`)
+            this.logger.warn(`The package ${this.packageToProcess.fullPackageName} does not seem to be a native module. Might not build successfully`)
             return false
         }
         return true
@@ -111,11 +127,11 @@ export class Prebuilder{
                     throw new Error(baseError)
                 }
                 else if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'skip'){
-                    console.warn(`${JSON.stringify(compileTarget)}. Skipping as onUnsupportedTargets is set to 'skip'`)
+                    this.logger.warn(`Support for ${JSON.stringify(compileTarget)} is unknown. Skipping as onUnsupportedTargets is set to 'skip'`)
                     return [isSupported, false]
                 }
                 else if (this.packageToProcess.mergedPrebuildifyOptions.onUnsupportedTargets === 'force'){
-                    console.warn(`${JSON.stringify(compileTarget)}. Build might not complete`)
+                    this.logger.warn(`Support for ${JSON.stringify(compileTarget)} is unknown. Build might not complete`)
                     return [isSupported, true]
                 }
             }
@@ -164,9 +180,11 @@ export class Prebuilder{
 export class PreBuildifyBuilder{
 
     private packagesToProcess:IPackageItemsToProcess 
+    private logger:any
 
     constructor(packagesToProcess:IPackageItemsToProcess){
         this.packagesToProcess = packagesToProcess
+        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.BUILDER)
     }
 
     async BuildAll(){
@@ -179,11 +197,12 @@ export class PreBuildifyBuilder{
 
     async Prebuildifier(packageToProcess: IPackageItem){
         if (packageToProcess.mergedPrebuildifyOptions.targets.length == 0){
-            console.log(`No targets to build for the native module '${packageToProcess.fullPackageName}'. Skipping`)
+            this.logger.info(`No targets to build for the native module '${packageToProcess.fullPackageName}'. Skipping`)
             return Promise.resolve()
         }
 
-        console.log(`Build native module: ${packageToProcess.fullPackageName}. Build options:- \n\n${JSON.stringify(packageToProcess.mergedPrebuildifyOptions, null, 4)}`)
+        const preBuildDetails:any = lodash.omit(packageToProcess.mergedPrebuildifyOptions, ["onUnsupportedTargets", "includePreReleaseTargets"])
+        this.logger.info(`Build native module: ${packageToProcess.fullPackageName}. Build options:-\n\n${JSON.stringify(preBuildDetails, null, 4)}`)
         
         return new Promise((resolve:any, reject:any) => {
             try{

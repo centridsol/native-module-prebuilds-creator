@@ -1,4 +1,4 @@
-import { TestHelper } from "../../../../testUtils/Helper"
+import { TestHelper } from "../../../../Shared/TestUtils/Helper"
 import { IPackageItem, IPackageItemsToProcess } from "../../src/IPrebuildsCreator"
 import { PreBuildifyBuilder } from "../../src/Operations/PreBuildifyBuilder"
 import { PreBuildsCopier } from "../../src/Operations/PreBuildsCopier"
@@ -6,9 +6,9 @@ import { TestMockObjectHelper } from "../Test.Utilities/Helper"
 import { AvailableMockObjects } from "../Test.Utilities/MockObjects/MockObjectRegister"
 import nodeAbi, { Target } from 'node-abi'
 import fs from "fs"
+import os from "os"
 import fsExtra from "fs-extra"
 import path from "path"
-import os from "os"
 import webpack from "webpack"
 import lodash from "lodash"
 
@@ -115,7 +115,7 @@ describe("Prebuilds copier tests", () => {
     }
     
     
-    describe.skip("Main operations tests", () => {
+    describe("Main operations tests", () => {
 
         it("Copiers the prebuild folders correctly", async () => {
             const tempOut:string = getTempOut()

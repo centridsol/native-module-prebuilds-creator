@@ -31,7 +31,7 @@ This package can be used through its CLI interface or through its programmatic A
 | --arch | - | Target Architecture | `--arch "x64"` | |
 | --platform | - | Target Platform | `--platform "win32"` | |
 | --targets | - | One or more targets | `--targets "node@20.0.0,electron@25.0.0"` | |
-| --out | `process.cwd()` | Output path for the generated prebuilds folder | | |
+| --out | `path.join(process.cwd(), './NMPrebuilds')` | Output path for the generated prebuilds folder | | |
 | --onUnsupportedTargets | `error` | What to do when a target does not seem to be supported. For example, when a package specifies it only works with Node.js versions 19 and above, and you select Node.js 10.0.0 as your target. Options: 'error' or 'skip' or 'force' | | |
 
 ### Programmatic Usage
