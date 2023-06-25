@@ -2,7 +2,7 @@ import { INativeModuleToPatchDetails, IPactherOptions, IPatchStrategies } from "
 import fsExtra from "fs-extra"
 import path from "path"
 import mergedirs from "merge-dirs"
-import { spawnSync } from "child_process";
+import spawn from "cross-spawn";
 import { TryGetBindingPath } from "../Utilities/Bindings";
 import { SharedHelpers } from "../../../../Shared/Utilities/Helpers";
 import { Consts } from "../Utilities/Consts";
@@ -117,7 +117,7 @@ export class UnbuiltPatcherStratgey extends BuiltPatcherStratgey{
             throw new Error(`node-gyp does not seem to be installed. Needed for patch strategy UnbuiltPatcherStratgey`)
         }
         
-        spawnSync(nodeGypPath, ["rebuild"], { stdio: 'inherit', cwd: this.nativeModule.path})
+        spawn.sync(nodeGypPath, ["rebuild"], { stdio: 'inherit', cwd: this.nativeModule.path})
         return this.DoPatch()
     }
 }

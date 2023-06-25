@@ -25,6 +25,7 @@
     ],
     "license": "SEE LICENSE IN license.md",
     "dependencies": {
+        "cross-spawn": "^7.0.3",
         "fs-extra": "^11.1.1",
         "lodash": "^4.17.21",
         "merge-dirs": "^0.2.1",

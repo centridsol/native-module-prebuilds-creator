@@ -217,8 +217,8 @@ describe("Prebuilds patcher tests", () => {
                     version: "1.0.0",
                     path: "",
                     prebuildsPath: prebuildsFolder,
-                    prebuildsArchAndPlatformPath: path.join(prebuildsFolder, "linux-x64"),
-                    prebuildsArchAndPlatformAbiPath: path.join(prebuildsFolder, "linux-x64", "electron.abi116.node")
+                    prebuildsArchAndPlatformPath: path.join(prebuildsFolder, `${os.platform()}-${os.arch()}`),
+                    prebuildsArchAndPlatformAbiPath: path.join(prebuildsFolder, `${os.platform()}-${os.arch()}`, "electron.abi116.node")
                 }
             })
         })
