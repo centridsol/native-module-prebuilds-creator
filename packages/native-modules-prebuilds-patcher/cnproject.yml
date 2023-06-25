@@ -41,7 +41,7 @@ next:
   releaseDescription: ''
   features: []
   bugFixes: []
-  improvements: []
+  improvements: ["Intial release."]
   documentation: []
   knownIssues: []
 packageable: true

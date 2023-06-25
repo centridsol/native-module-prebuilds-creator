@@ -94,7 +94,7 @@ export class Patcher{
             }
         }
         else{
-            processPatchError(new Error("Unknown reason."))
+            processPatchError(new Error("This usually means building the package also failed. If --forceRebuildOnNoBindings is set to false, that could be the problem."))
         }
     }
 }

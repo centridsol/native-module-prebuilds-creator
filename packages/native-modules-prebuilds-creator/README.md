@@ -114,7 +114,7 @@ When the prebuilds folder is created, it has a compiled version of the prebuilds
 | --- | --- | --- | --- | --- |
 | --arch | - | Target Architecture | `--arch "x64"` | patchAll, patchSpecific |
 | --platform | - | Target Platform | `--platform "win32"` | patchAll, patchSpecific |
-| --targets | - | One or more targets | `--targets "node@20.0.0,electron@25.0.0"` | patchAll, patchSpecific |
+| --target | - | Target to use | `--target "electron@25.0.0"` | patchAll, patchSpecific |
 | --packages | - | Packages to patch when patch specific is selected | `--packages "drivelist@9.2.4"` | patchSpecific |
 | --forceRebuildOnNoBindings | `true` | To patch the correct prebuild-patcher at times, it needs to determine the correct binding file. If the native module has not been built, it cannot figure this out. This rebuilds the project so as to be able to obtain the correct binding file to patch | | patchAll, patchSpecific |
 | --shouldBackup | `true` | Should back up native package before patching. Allows you to revert patches after building. (see `--revertPatches` below) | | patchAll, patchSpecific |

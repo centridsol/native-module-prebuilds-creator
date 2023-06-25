@@ -27,6 +27,11 @@ export class PrebuildsPatcher{
         this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.MAIN)
     }
 
+    UpdatePatcherOptions(patcherOptions:IPactherOptions){
+        this.patcherOptions = {...this.patcherOptions, ...patcherOptions}
+        return this
+    }
+
     private TryGetProjectPath(){
 
         const _getProjectPath:any = (dir:string, prev:string = null) => {

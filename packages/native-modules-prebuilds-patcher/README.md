@@ -66,9 +66,9 @@ patcher.SetProjectPath("<alternate-project-dir>");
 /*
 Update the patcher options
 
-SetOptions(options: IPatcherOptions)
+UpdatePatcherOptions(options: IPatcherOptions)
 */
-patcher.SetOptions("<alternate-project-dir>");
+patcher.UpdatePatcherOptions("<options>");
 ```
 
 Please correct any grammatical or spelling errors for the readme file above.

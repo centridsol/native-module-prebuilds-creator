@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/PactherWrapper.ts',
+  entry: './src/PatcherWrapper.ts',
   output: {
     filename: 'prebuild-patcher.js',
     path: path.resolve(__dirname, 'src/Operations/templates'),
