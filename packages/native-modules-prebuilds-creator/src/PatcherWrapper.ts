@@ -165,7 +165,7 @@ function runAsImport(){
 }
 
 
-//FIME: Do this properly
+//TODO: FIME: A bit of a hack for now. Will do it properly later. 
 if (process.argv[1].includes("prebuild-patcher.js")) {
     runAsCLI();
 }
