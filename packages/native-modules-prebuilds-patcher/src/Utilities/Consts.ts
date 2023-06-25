@@ -3,6 +3,6 @@ export const Consts = {
     BACKUP_JSON_NAME: "buHash.json",
     LOGGER_NAMES: {
         MAIN: "PrebuildsPatcher",
-        PACTHER: "PrebuildsPatcher > PATCHER"
+        PACTHER: "PrebuildsPatcher > Patcher"
     }
 }

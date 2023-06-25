@@ -47,7 +47,7 @@ export class PrebuildifyPatcherStratgey extends PatcherStrategyBase{
 
     Patch(){
         this.CheckCanRun()
-        this.logger.info(`Pacthing package ${this.nativeModule.name} using strategy 'PrebuildifyPatcherStratgey'.`)
+        this.logger.info(`Pacthing package '${this.nativeModule.name}' using strategy 'PrebuildifyPatcherStratgey'.`)
         const currentPrebuildFolder:string = path.join(this.nativeModule.path, "prebuilds")
         if (!fsExtra.existsSync(currentPrebuildFolder)){
             fsExtra.mkdirSync(currentPrebuildFolder, {recursive:true})
@@ -82,7 +82,7 @@ export class BuiltPatcherStratgey extends PatcherStrategyBase{
 
     Patch(){
         this.CheckCanRun()
-        this.logger.info(`Pacthing package ${this.nativeModule.name} using strategy 'BuiltPatcherStratgey'`)
+        this.logger.info(`Pacthing package '${this.nativeModule.name}' using strategy 'BuiltPatcherStratgey'`)
         return this.DoPatch()
     }
 
@@ -108,7 +108,7 @@ export class UnbuiltPatcherStratgey extends BuiltPatcherStratgey{
 
     Patch(){
         this.CheckCanRun()
-        this.logger.info(`Pacthing package ${this.nativeModule.name} using strategy 'UnBuiltPatcherStratgey'`)
+        this.logger.info(`Pacthing package '${this.nativeModule.name}' using strategy 'UnBuiltPatcherStratgey'`)
         let nodeGypPath:string 
         try{
             nodeGypPath = eval("require.resolve('node-gyp/bin/node-gyp.js')")

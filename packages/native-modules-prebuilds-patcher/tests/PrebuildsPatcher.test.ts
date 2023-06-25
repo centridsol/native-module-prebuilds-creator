@@ -62,7 +62,7 @@ describe("Prebuilds patcher tests", () => {
         it("It doesnt repatch if already patched", async () => {
             const getFileHashDetails = () => {
                 const stats = fs.statSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", Consts.BACKUP_JSON_NAME))
-                return `${stats.atime.getTime()}-${stats.mtime.getTime()}-${stats.ctime.getTime()}`
+                return `${stats.mtime.getTime()}-${stats.ctime.getTime()}`
             }
             await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
             const initalPatchStats = getFileHashDetails()
