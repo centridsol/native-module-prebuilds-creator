@@ -1,4 +1,5 @@
 trigger_job:
   trigger:
-    include: packages/native-modules-prebuilds-creator/.gitlab-ci.yml
-  strategy: depend
+    include: 
+    - local: packages/native-modules-prebuilds-creator/.gitlab-ci.yml
+    strategy: depend
