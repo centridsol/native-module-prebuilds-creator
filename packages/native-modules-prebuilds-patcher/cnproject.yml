@@ -1,7 +1,8 @@
 projectNamespace: centrid
 projectName: native-modules-prebuilds-patcher
 description: >-
-  Main package for patching native module prebuilds created by the Native Module Prebuilds Creator
+  Main package for patching native module prebuilds created by the Native Module
+  Prebuilds Creator
 descriptionTags:
   - prebuilt
   - binaries
@@ -30,7 +31,7 @@ versionInfo:
     versionNumber: 0
     featureList: []
   patch:
-    versionNumber: 0
+    versionNumber: 1
     bugList: []
   commitHash:
     versionNumber: ''
@@ -41,7 +42,7 @@ next:
   releaseDescription: ''
   features: []
   bugFixes: []
-  improvements: ["Intial release."]
+  improvements: []
   documentation: []
   knownIssues: []
 packageable: true

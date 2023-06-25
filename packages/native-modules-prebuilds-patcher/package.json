@@ -1,8 +1,8 @@
 {
     "name": "@centrid/native-modules-prebuilds-patcher",
     "main": "src/PrebuildsPatcher",
-    "version": "1.0.0",
-    "cnversion": "1.0.0.223541017",
+    "version": "1.0.1",
+    "cnversion": "1.0.1.4178048",
     "description": "Main package for patching native module prebuilds created by the Native Module Prebuilds Creator",
     "keywords": [
         "prebuilt",
