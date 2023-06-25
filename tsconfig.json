@@ -14,13 +14,12 @@
     "isolatedModules": false,
     "noEmit": false,
     "strictNullChecks": false,
-    "rootDir": "src",
+    "rootDir": ".",
     "noUnusedLocals": false,
     "sourceMap": true,
-    "baseUrl": ".",
     "downlevelIteration": true,
   },
-  "include": ["src/*", "./Shared"],
+  "include": ["src/*", "./Shared", "./type.d.ts"],
   "ts-node": {
     "files": true
   },
