@@ -1,0 +1,91 @@
+before_script:
+- cd packages/native-modules-prebuilds-patcher
+
+
+include:
+- project: centrid/packagerepositry
+  ref: master
+  file: GitlabCIScripts/centrid-npm-ci.yml
+
+
+stages:
+- prepare
+- test
+- build
+- release
+- deploy-to-self-host
+- deploy-to-npm
+
+prepare:
+  stage: prepare
+  extends: .base_npm_prepare
+  artifacts:
+    paths: 
+    - node_modules/
+    - native-modules-prebuilds-patcher/.npmrc
+    - native-modules-prebuilds-patcher/.accesstoken
+    expire_in: 30 mins
+    reports:
+      dotenv: native-modules-prebuilds-patcher/build.env
+
+test:
+  stage: test
+  script: 
+  - !reference [.install_cendevops, script]
+  - yarn run test
+  needs: 
+  - job: prepare
+    artifacts: true
+
+build:
+  stage: build
+  extends: .base_npm_build
+  needs: 
+  - job: test
+  - job: prepare
+    artifacts: true
+  script:
+    - !reference [.base_npm_build, script]
+    - yarn run build
+  artifacts:
+    paths: 
+    - dist/
+
+release:
+  stage: release
+  needs: 
+  - job: build
+    artifacts: true
+  - job: prepare
+    artifacts: true
+  script:
+  - !reference [.base_npm_release-prepare, script]
+  - !reference [.base_release-upload, script]
+  when: manual
+
+deploy-to-self-host:
+  stage: deploy-to-self-host
+  extends: .base_npm_package
+  needs: 
+  - job: build
+    artifacts: true
+  - job: release
+  variables:
+    DEPLOY_TO_SELF_HOST: "true"
+    DEPLOY_TO_NPM: "false"
+    PATH_TO_USE: ./dist
+  when: manual
+
+
+deploy-to-npm:
+  stage: deploy-to-npm
+  extends: .base_npm_package
+  needs: 
+  - job: build
+    artifacts: true
+  - job: release
+  variables:
+    DEPLOY_TO_SELF_HOST: "false"
+    DEPLOY_TO_NPM: "true"
+    PATH_TO_USE: ./dist
+  when: manual

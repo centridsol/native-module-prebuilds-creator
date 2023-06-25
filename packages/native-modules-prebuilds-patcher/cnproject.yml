@@ -1,13 +1,16 @@
 projectNamespace: centrid
-projectName: native-modules-prebuilds-creator
+projectName: native-modules-prebuilds-patcher
 description: >-
-  Wrapper for Prebuildfy, allowing you to create prebuild native modules for
-  multiple of packages at the same time
+  Main package for patching native module prebuilds created by the Native Module Prebuilds Creator
 descriptionTags:
-  - prebuildfy
+  - prebuilt
+  - binaries
+  - prebuildify
   - packages
-  - installer
   - native-modules
+  - electron
+  - bindings
+  - patcher
 projectUrl: ''
 license:
   filePath: license.md
@@ -42,4 +45,4 @@ next:
   documentation: []
   knownIssues: []
 packageable: true
-artificateName: Centrid-native-modules-prebuilds-creator
+artificateName: Centrid-native-modules-prebuilds-patcher

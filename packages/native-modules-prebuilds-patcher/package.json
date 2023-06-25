@@ -3,12 +3,16 @@
     "main": "src/PrebuildsPatcher",
     "version": "1.0.0",
     "cnversion": "1.0.0.223541017",
-    "description": "Wrapper for Prebuildfy, allowing you to create prebuild native modules for multiple of packages at the same time",
+    "description": "Main package for patching native module prebuilds created by the Native Module Prebuilds Creator",
     "keywords": [
-        "prebuildfy",
+        "prebuilt",
+        "binaries",
+        "prebuildify",
         "packages",
-        "installer",
-        "native-modules"
+        "native-modules",
+        "electron",
+        "bindings",
+        "patcher"
     ],
     "author": "Chido Warambwa <chidow@centridsol.tech>",
     "homepage": "",
@@ -26,6 +30,7 @@
         "merge-dirs": "^0.2.1",
         "node-abi": "^3.43.0",
         "node-gyp": "^9.4.0",
+        "npmlog": "^7.0.1",
         "rimraf": "^4.0.0",
         "semver": "^7.5.1"
     },
@@ -43,5 +48,9 @@
         "jest": "^29.5.0",
         "ts-jest": "^29.1.0",
         "typescript": "4.9.5"
+    },
+    "scripts": {
+        "test": "jest --runInBand",
+        "build": "tsc --project ./tsconfig.json; cp package.json ./dist/package.json; cp README.md ./dist/README.md; cp LICENSE.md ./dist/LICENSE.md"
     }
 }

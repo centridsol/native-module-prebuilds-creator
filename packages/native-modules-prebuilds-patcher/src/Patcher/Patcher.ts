@@ -4,6 +4,7 @@ import fsExtra from "fs-extra"
 import os from "os"
 import path from "path"
 import { Consts } from "../Utilities/Consts"
+import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
 
 export class Patcher{
 
@@ -11,6 +12,7 @@ export class Patcher{
     private backUpPath:string
     private backUpHash:string
     private patcherOptions:IPactherOptions
+    private logger:any
 
     constructor(patcherOptions:IPactherOptions={}){
         this.patchStrategies = [PrebuildifyPatcherStratgey, 
@@ -25,14 +27,15 @@ export class Patcher{
         }
         this.backUpPath = path.join(os.tmpdir(), Consts.BACKUP_DIR_NAME)
         this.backUpHash = (+new Date).toString(36)
+        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.PACTHER)
     }
 
     Patch(nativeModuleToPatch:INativeModuleToPatch){
-        console.log(`Patching the following native modules:-\n\n${Object.values(nativeModuleToPatch).map((n: INativeModuleToPatchDetails)=> {
+        this.logger.info(`Patching the following native modules:-\n\n${Object.values(nativeModuleToPatch).map((n: INativeModuleToPatchDetails)=> {
                         return `${n.name}@${n.version}\n`
                     }).join("")}`)
         if (!this.patcherOptions.shouldBackup === true){
-            console.warn("Package backing up set to false. Skipping backing up packages")
+            this.logger.warn("Package backing up set to false. Skipping backing up packages")
         }
 
         for (const nativeModule of Object.values(nativeModuleToPatch)){
@@ -47,10 +50,10 @@ export class Patcher{
         }
         const buPath:string  = path.join(this.backUpPath, `${path.basename(nativeModule.path)}@${nativeModule.version}`)
         if (fsExtra.existsSync(buPath)){
-            console.debug(`Backup already exists. Skipping`)
+            this.logger.verbose(`Backup already exists. Skipping`)
             return
         }
-        console.debug(`Backing up the package ${nativeModule.name} to ${buPath}`)
+        this.logger.verbose(`Backing up the package ${nativeModule.name} to ${buPath}`)
         
         fsExtra.copySync(nativeModule.path, buPath)
         fsExtra.writeFileSync(path.join(buPath, Consts.BACKUP_JSON_NAME), this.GetBuHashDetails(nativeModule))
@@ -66,12 +69,12 @@ export class Patcher{
             if (this.patcherOptions.onPatchFail === 'error'){
                 throw new Error(msg)
             }
-            console.warn(`${msg}. Skipping`)
+            this.logger.warn(`${msg}. Skipping`)
         }
 
         let isPatched:boolean = false
         for (const strategy of this.patchStrategies){
-            const currentPatchStategy = new strategy(nativeModule, this.patcherOptions) as IPatchStrategies
+            const currentPatchStategy = new strategy(nativeModule, this.patcherOptions, this.logger) as IPatchStrategies
             try{
                 if (currentPatchStategy.CanPatch()){
                     isPatched = currentPatchStategy.Patch()

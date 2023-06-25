@@ -14,12 +14,11 @@
     "isolatedModules": false,
     "noEmit": false,
     "strictNullChecks": false,
-    "rootDir": ".",
     "noUnusedLocals": false,
     "sourceMap": false,
     "baseUrl": ".",
     "downlevelIteration": true,
     "outDir": "./dist"
   },
-  "include": ["src/", "./type.d.ts"]
+  "include": ["./src/", "./type.d.ts", "./../../Shared"],
 }

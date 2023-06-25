@@ -1,4 +1,4 @@
-import { TestHelper } from "../../../testUtils/Helper"
+import { TestHelper } from "../../../../Shared/TestUtils/Helper"
 import path from "path"
 import fsExtra from "fs-extra"
 import { AvailableMockObjects  } from "../../../native-modules-prebuilds-creator/tests/Test.Utilities/MockObjects/MockObjectRegister"

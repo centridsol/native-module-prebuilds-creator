@@ -4,7 +4,7 @@ import path from "path"
 import os from "os"
 import fs from "fs"
 import { IPactherOptions } from "../src/IPrebuildsPatcher"
-import { TestHelper } from "../../testUtils/Helper"
+import { TestHelper } from "../../../Shared/TestUtils/Helper"
 import { rimrafSync } from "rimraf"
 import { Consts } from "../src/Utilities/Consts"
 

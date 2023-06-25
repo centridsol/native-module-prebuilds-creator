@@ -4,6 +4,8 @@ import path from "path"
 import mergedirs from "merge-dirs"
 import { spawnSync } from "child_process";
 import { TryGetBindingPath } from "../Utilities/Bindings";
+import { SharedHelpers } from "../../../../Shared/Utilities/Helpers";
+import { Consts } from "../Utilities/Consts";
 
 abstract class PatcherStrategyBase implements IPatchStrategies{
 
@@ -11,12 +13,14 @@ abstract class PatcherStrategyBase implements IPatchStrategies{
     protected packageJson:any
     protected patcherOptions:IPactherOptions
     protected canPatch:boolean
+    protected logger:any
 
-    constructor(nativeModule:INativeModuleToPatchDetails, patcherOptions:IPactherOptions){
+    constructor(nativeModule:INativeModuleToPatchDetails, patcherOptions:IPactherOptions, logger:any=SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.PACTHER)){
         this.nativeModule = nativeModule
         this.packageJson =  JSON.parse(fsExtra.readFileSync(path.join(nativeModule.path, "package.json")).toString())
         this.patcherOptions = patcherOptions
         this.canPatch = this.GetCanPatchValue()
+        this.logger = logger
     }
 
     protected abstract GetCanPatchValue():boolean
@@ -43,7 +47,7 @@ export class PrebuildifyPatcherStratgey extends PatcherStrategyBase{
 
     Patch(){
         this.CheckCanRun()
-        console.log(`Package '${this.nativeModule.name}' seems to use prebuildify. Patching by merging prebuilds folders `)
+        this.logger.info(`Pacthing package ${this.nativeModule.name} using strategy 'PrebuildifyPatcherStratgey'.`)
         const currentPrebuildFolder:string = path.join(this.nativeModule.path, "prebuilds")
         if (!fsExtra.existsSync(currentPrebuildFolder)){
             fsExtra.mkdirSync(currentPrebuildFolder, {recursive:true})
@@ -78,7 +82,7 @@ export class BuiltPatcherStratgey extends PatcherStrategyBase{
 
     Patch(){
         this.CheckCanRun()
-        console.log(`Pacthing package ${this.nativeModule.name} using strategy 'BuiltPatcherStratgey'`)
+        this.logger.info(`Pacthing package ${this.nativeModule.name} using strategy 'BuiltPatcherStratgey'`)
         return this.DoPatch()
     }
 
@@ -104,7 +108,7 @@ export class UnbuiltPatcherStratgey extends BuiltPatcherStratgey{
 
     Patch(){
         this.CheckCanRun()
-        console.log(`Pacthing package ${this.nativeModule.name} using strategy 'UnBuiltPatcherStratgey'`)
+        this.logger.info(`Pacthing package ${this.nativeModule.name} using strategy 'UnBuiltPatcherStratgey'`)
         let nodeGypPath:string 
         try{
             nodeGypPath = eval("require.resolve('node-gyp/bin/node-gyp.js')")
