@@ -19,7 +19,7 @@
     "sourceMap": true,
     "downlevelIteration": true,
   },
-  "include": ["src/*", "./Shared", "./type.d.ts"],
+  "include": ["src/*", "./Shared"],
   "ts-node": {
     "files": true
   },
