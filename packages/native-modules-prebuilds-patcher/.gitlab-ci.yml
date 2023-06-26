@@ -20,10 +20,9 @@ prepare:
   artifacts:
     paths: 
     - node_modules/
+    - packages/native-modules-prebuilds-patcher/node_modules/
     - packages/native-modules-prebuilds-patcher/.npmrc
     - packages/native-modules-prebuilds-patcher/.accesstoken
-    - packages/native-modules-prebuilds-patcher/${CN_PROJECT_FILE}
-    - packages/native-modules-prebuilds-patcher/${PROJECT_TYPE_CONFIG_FILE}
     expire_in: 30 mins
     reports:
       dotenv: packages/native-modules-prebuilds-patcher/build.env
@@ -31,7 +30,7 @@ prepare:
 test:
   stage: test
   script: 
-  - !reference [.monorepo_prepare, script]
+  - yarn
   - yarn run test
   needs: 
   - job: prepare
@@ -45,7 +44,7 @@ build:
   - job: prepare
     artifacts: true
   script:
-    - !reference [.monorepo_prepare, script]
+    - yarn
     - yarn run build
   artifacts:
     paths: 
