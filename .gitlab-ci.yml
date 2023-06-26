@@ -1,10 +1,19 @@
+variables:
+- PROJECT_TYPE: "npm"
+
 creator_ci:
   trigger:
     include: 
     - local: packages/native-modules-prebuilds-creator/.gitlab-ci.yml
     strategy: depend
+
 patcher_ci:
   trigger:
     include: 
     - local: packages/native-modules-prebuilds-patcher/.gitlab-ci.yml
     strategy: depend
+
+release:
+  script: 
+  - echo "released"
+  when: manuel

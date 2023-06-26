@@ -7,7 +7,6 @@ include:
   ref: master
   file: GitlabCIScripts/centrid-npm-ci.yml
 
-
 stages:
 - prepare
 - test
@@ -17,12 +16,14 @@ stages:
 
 prepare:
   stage: prepare
-  extends: .base_npm_prepare
+  extends: .monorepo_prepare
   artifacts:
     paths: 
     - node_modules/
     - packages/native-modules-prebuilds-patcher/.npmrc
     - packages/native-modules-prebuilds-patcher/.accesstoken
+    - packages/native-modules-prebuilds-patcher/${CN_PROJECT_FILE}
+    - packages/native-modules-prebuilds-patcher/${PROJECT_TYPE_CONFIG_FILE}
     expire_in: 30 mins
     reports:
       dotenv: packages/native-modules-prebuilds-patcher/build.env
@@ -30,7 +31,7 @@ prepare:
 test:
   stage: test
   script: 
-  - !reference [.install_cendevops, script]
+  - !reference [.monorepo_prepare, script]
   - yarn run test
   needs: 
   - job: prepare
@@ -58,6 +59,10 @@ deploy-to-self-host:
     artifacts: true
   - job: prepare
     artifacts: true
+  - project: ${CI_PROJECT_PATH}
+    job: release
+    ref: ${CI_COMMIT_BRANCH}
+    artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"
     DEPLOY_TO_NPM: "false"
@@ -72,6 +77,10 @@ deploy-to-npm:
   - job: build
     artifacts: true
   - job: prepare
+    artifacts: true
+  - project: ${CI_PROJECT_PATH}
+    job: release
+    ref: ${CI_COMMIT_BRANCH}
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "false"
