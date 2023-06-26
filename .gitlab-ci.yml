@@ -1,5 +1,5 @@
 variables:
-- PROJECT_TYPE: "npm"
+  PROJECT_TYPE: "npm"
 
 creator_ci:
   trigger:
@@ -16,4 +16,4 @@ patcher_ci:
 release:
   script: 
   - echo "released"
-  when: manuel
+  when: manual
