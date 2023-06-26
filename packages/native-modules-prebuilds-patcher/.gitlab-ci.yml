@@ -59,10 +59,6 @@ deploy-to-self-host:
     artifacts: true
   - job: prepare
     artifacts: true
-  - project: centridpub/native-module-prebuilds-creator
-    job: release
-    ref: master
-    artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"
     DEPLOY_TO_NPM: "false"
@@ -77,10 +73,6 @@ deploy-to-npm:
   - job: build
     artifacts: true
   - job: prepare
-    artifacts: true
-  - project: ${CI_PROJECT_PATH}
-    job: release
-    ref: ${CI_COMMIT_BRANCH}
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "false"

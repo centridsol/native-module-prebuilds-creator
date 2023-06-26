@@ -2,7 +2,7 @@ variables:
   PROJECT_TYPE: "npm"
 
 stages:
-- patcher_ci
+# - patcher_ci
 - release
 
 
@@ -12,19 +12,18 @@ stages:
 #     - local: packages/native-modules-prebuilds-creator/.gitlab-ci.yml
 #     strategy: depend
 
-patcher_ci:
-  stage: patcher_ci
-  trigger:
-    include: 
-    - local: packages/native-modules-prebuilds-patcher/.gitlab-ci.yml
-    strategy: depend
+# patcher_ci:
+#   stage: patcher_ci
+#   trigger:
+#     include: 
+#     - local: packages/native-modules-prebuilds-patcher/.gitlab-ci.yml
+#     strategy: depend
 
 release:
   stage: release
-  script: 
-  - echo "released"
-  - echo ${CI_PROJECT_PATH}
-  - echo ${CI_COMMIT_BRANCH}
+  scripts:
+  - [.base_prepare, script]
+  - [.base_npm_release-prepare, script]
   when: manual
   artifacts:
     paths: 
