@@ -1,14 +1,14 @@
 projectNamespace: centrid
-projectName: theia-installer-creator
-description: 'Package for building/packaging a Apache theia project into an installer on different platforms'
+projectName: native-modules-prebuilds-creator
+description: 'Package for creating prebuilds for multiple native modules'
 descriptionTags:
-  - "theia"
-  - "IDE"
-  - "installer"
-  - "electron-builder"
-  - "platform-builder"
-  - "packager"
+  - "prebuilt"
+  - "binaries"
+  - "prebuildfy"
+  - "packages"
+  - "native-modules"
   - "electron"
+  - "bindings"
 projectUrl: ''
 license:
   filePath: license.md
@@ -37,10 +37,27 @@ projectPaths:
   tests: tests
 next:
   releaseDescription: ''
-  features: []
+  features: ["Working on gitlab script"]
   bugFixes: []
   improvements: []
   documentation: []
   knownIssues: []
 packageable: true
-artificateName: Centrid-theia-platform-builder
+artificateName: Centrid-native-modules-prebuilds-creator
+workspaces:
+  - path: 'packages/native-modules-prebuilds-creator'
+    name: "native-modules-prebuilds-creator"
+    next:
+      features: []
+      bugFixes: []
+      improvements: []
+      documentation: []
+      knownIssues: []
+  - path: 'packages/native-modules-prebuilds-patcher'
+    name: "native-modules-prebuilds-patcher"
+    next:
+      features: []
+      bugFixes: []
+      improvements: []
+      documentation: []
+      knownIssues: []
