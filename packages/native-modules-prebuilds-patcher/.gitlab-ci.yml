@@ -45,7 +45,7 @@ build:
   - job: prepare
     artifacts: true
   script:
-    - !reference [.base_npm_build, script]
+    - !reference [.monorepo_prepare, script]
     - yarn run build
   artifacts:
     paths: 
