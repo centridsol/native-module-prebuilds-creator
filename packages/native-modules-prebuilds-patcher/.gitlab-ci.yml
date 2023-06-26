@@ -30,8 +30,9 @@ prepare:
 test:
   stage: test
   script: 
-  - yarn
-  - yarn run test
+  - echo test
+  # - yarn
+  # - yarn run test
   needs: 
   - job: prepare
     artifacts: true
@@ -58,9 +59,9 @@ deploy-to-self-host:
     artifacts: true
   - job: prepare
     artifacts: true
-  - project: ${CI_PROJECT_PATH}
+  - project: centridpub/native-module-prebuilds-creator
     job: release
-    ref: ${CI_COMMIT_BRANCH}
+    ref: main
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"

@@ -1,6 +1,11 @@
 variables:
   PROJECT_TYPE: "npm"
 
+stages:
+- patcher_ci
+- release
+
+
 # creator_ci:
 #   trigger:
 #     include: 
@@ -8,12 +13,14 @@ variables:
 #     strategy: depend
 
 patcher_ci:
+  stage: patcher_ci
   trigger:
     include: 
     - local: packages/native-modules-prebuilds-patcher/.gitlab-ci.yml
     strategy: depend
 
 release:
+  stage: release
   script: 
   - echo "released"
   - echo ${CI_PROJECT_PATH}
