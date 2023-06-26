@@ -1,5 +1,7 @@
-variables:
-  PROJECT_TYPE: "npm"
+include:
+- project: centrid/packagerepositry
+  ref: master
+  file: GitlabCIScripts/centrid-npm-ci.yml
 
 stages:
 # - patcher_ci
