@@ -16,4 +16,10 @@ patcher_ci:
 release:
   script: 
   - echo "released"
+  - echo ${CI_PROJECT_PATH}
+  - echo ${CI_COMMIT_BRANCH}
   when: manual
+  artifacts:
+    paths: 
+    - packages/native-modules-prebuilds-patcher/package.json
+    expire_in: 30 mins
