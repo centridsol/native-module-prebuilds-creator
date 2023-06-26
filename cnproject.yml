@@ -21,7 +21,7 @@ company: ''
 versionInfo:
   major:
     versionNumber: 1
-    vesionDescription: ''
+    versionDescription: ''
     requires: {}
     knownIssues: []
   minor:

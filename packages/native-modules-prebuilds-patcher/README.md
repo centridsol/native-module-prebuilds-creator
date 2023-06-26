@@ -72,3 +72,22 @@ patcher.UpdatePatcherOptions("<options>");
 ```
 
 Please correct any grammatical or spelling errors for the readme file above.
+
+
+## Future Improvements and Other Notes
+
+* Most of the operations in these packages are run synchronously, and performance gains can be made by running most of these operations asynchronously. This will be considered for future releases.
+
+## Contributing
+
+Native Module Prebuilds Creator is an open-source project, and contributions are welcome. If you have a bug fix, please create a pull request explaining what the bug is, how you fixed it, and how you tested it.
+
+If it's a new feature, please add it as an issue with the "enhancement" label, providing details about the new feature and why you think it's needed. We will discuss it there, and once it's agreed upon, you can create a pull request with the highlighted details.
+
+## Authors
+
+* **Chido W** - *Initial Work* - [chidow@centridsol.tech](mailto:chidow@centridsol.tech) 
+  
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -91,7 +91,7 @@ If it's a new feature, please add it as an issue with the "enhancement" label, p
 
 ## Authors
 
-* **Chido Warambwa** - *Initial Work* - [chidow@centridsol.tech](mailto:chidow@centridsol.tech) 
+* **Chido W**  - *Initial Work* - [chidow@centridsol.tech](mailto:chidow@centridsol.tech) 
   
 ## License
 

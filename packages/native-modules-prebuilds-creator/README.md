@@ -1,5 +1,3 @@
-Below is the corrected version of the README file:
-
 # Native Module Prebuilds Creator
 ### Main package for creating prebuilds for multiple native modules.
 
@@ -123,3 +121,21 @@ When the prebuilds folder is created, it has a compiled version of the prebuilds
 | --projectPath | Determines from `process.cwd()` | Project path to which the patch will be applied | | patchAll, patchSpecific, revertPatches |
 
 To use the patcher programmatically, please see [Native Module Prebuild Patcher](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher)
+
+## Future Improvements and Other Notes
+
+* Most of the operations in these packages are run synchronously, and performance gains can be made by running most of these operations asynchronously. This will be considered for future releases.
+
+## Contributing
+
+Native Module Prebuilds Creator is an open-source project, and contributions are welcome. If you have a bug fix, please create a pull request explaining what the bug is, how you fixed it, and how you tested it.
+
+If it's a new feature, please add it as an issue with the "enhancement" label, providing details about the new feature and why you think it's needed. We will discuss it there, and once it's agreed upon, you can create a pull request with the highlighted details.
+
+## Authors
+
+* **Chido W** - *Initial Work* - [chidow@centridsol.tech](mailto:chidow@centridsol.tech) 
+  
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
