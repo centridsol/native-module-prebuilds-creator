@@ -22,6 +22,6 @@ stages:
 release:
   stage: release
   script:
-  - [.base_prepare, script]
-  - [.base_npm_release-prepare, script]
+  - !reference [.base_prepare, script]
+  - !reference [.base_npm_release-prepare, script]
   when: manual
