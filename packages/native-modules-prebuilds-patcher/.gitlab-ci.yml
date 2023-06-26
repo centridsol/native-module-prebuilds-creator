@@ -61,7 +61,7 @@ deploy-to-self-host:
     artifacts: true
   - project: centridpub/native-module-prebuilds-creator
     job: release
-    ref: main
+    ref: master
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"
