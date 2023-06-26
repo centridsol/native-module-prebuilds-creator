@@ -21,11 +21,7 @@ stages:
 
 release:
   stage: release
-  scripts:
+  script:
   - [.base_prepare, script]
   - [.base_npm_release-prepare, script]
   when: manual
-  artifacts:
-    paths: 
-    - packages/native-modules-prebuilds-patcher/package.json
-    expire_in: 30 mins
