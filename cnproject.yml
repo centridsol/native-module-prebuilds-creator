@@ -25,7 +25,7 @@ versionInfo:
     requires: {}
     knownIssues: []
   minor:
-    versionNumber: 4
+    versionNumber: 5
     featureList: []
   patch:
     versionNumber: 5
@@ -37,7 +37,7 @@ projectPaths:
   tests: tests
 next:
   releaseDescription: ''
-  features: ["Version bump for npm"]
+  features: []
   bugFixes: []
   improvements: []
   documentation: []
