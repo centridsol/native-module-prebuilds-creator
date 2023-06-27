@@ -28,7 +28,7 @@ versionInfo:
     versionNumber: 2
     featureList: []
   patch:
-    versionNumber: 4
+    versionNumber: 5
     bugList: []
   commitHash:
     versionNumber: ''
@@ -38,7 +38,7 @@ projectPaths:
 next:
   releaseDescription: ''
   features: []
-  bugFixes: ["Gitlab fixes"]
+  bugFixes: []
   improvements: []
   documentation: []
   knownIssues: []
