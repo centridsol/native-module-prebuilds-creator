@@ -1,54 +1,45 @@
-before_script:
-- cd packages/native-modules-prebuilds-creator
+variables:
+  SUBPATH: packages/native-modules-prebuilds-creator
 
+before_script:
+- cd ${SUBPATH}
 
 include:
 - project: centrid/packagerepositry
   ref: master
   file: GitlabCIScripts/centrid-npm-ci.yml
 
-
 stages:
 - prepare
-- test
 - build
 - deploy-to-self-host
 - deploy-to-npm
 
 prepare:
   stage: prepare
-  extends: .base_npm_prepare
+  extends: .monorepo_prepare
   artifacts:
     paths: 
     - node_modules/
-    - packages/native-modules-prebuilds-creator/.npmrc
-    - packages/native-modules-prebuilds-creator/.accesstoken
+    - ${SUBPATH}/node_modules/
+    - ${SUBPATH}/.npmrc
+    - ${SUBPATH}/.accesstoken
     expire_in: 30 mins
     reports:
-      dotenv: packages/native-modules-prebuilds-creator/build.env
-
-test:
-  stage: test
-  script: 
-  - !reference [.install_cendevops, script]
-  - yarn run test
-  needs: 
-  - job: prepare
-    artifacts: true
+      dotenv: ${SUBPATH}/build.env
 
 build:
   stage: build
   extends: .base_npm_build
   needs: 
-  - job: test
   - job: prepare
     artifacts: true
   script:
-    - !reference [.base_npm_build, script]
+    - yarn
     - yarn run build
   artifacts:
     paths: 
-    - packages/native-modules-prebuilds-creator/dist/
+    - ${SUBPATH}/dist/
 
 deploy-to-self-host:
   stage: deploy-to-self-host
@@ -63,7 +54,6 @@ deploy-to-self-host:
     DEPLOY_TO_NPM: "false"
     PATH_TO_USE: ./dist
   when: manual
-
 
 deploy-to-npm:
   stage: deploy-to-npm

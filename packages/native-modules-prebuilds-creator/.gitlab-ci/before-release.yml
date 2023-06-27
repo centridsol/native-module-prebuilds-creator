@@ -1,0 +1,49 @@
+variables:
+  SUBPATH: packages/native-modules-prebuilds-creator
+
+before_script:
+- cd ${SUBPATH}
+
+include:
+- project: centrid/packagerepositry
+  ref: master
+  file: GitlabCIScripts/centrid-npm-ci.yml
+
+stages:
+- prepare
+- test
+- build
+
+prepare:
+  stage: prepare
+  extends: .monorepo_prepare
+  artifacts:
+    paths: 
+    - node_modules/
+    - ${SUBPATH}/node_modules/
+    - ${SUBPATH}/.npmrc
+    - ${SUBPATH}/.accesstoken
+    expire_in: 30 mins
+    reports:
+      dotenv: ${SUBPATH}/build.env
+
+test:
+  stage: test
+  script: 
+  - yarn
+  - yarn run test
+  needs: 
+  - job: prepare
+    artifacts: true
+
+build:
+  stage: build
+  extends: .base_npm_build
+  needs: 
+  - job: test
+  - job: prepare
+    artifacts: true
+  script:
+    - yarn
+    - yarn run build
+
