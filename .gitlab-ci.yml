@@ -15,6 +15,7 @@ prepare:
   extends: .base_npm_prepare
 
 before-release-scripts:
+  stage: before-release-scripts
   # trigger:
   #   include: 
   #   - local: packages/native-modules-prebuilds-creator/.gitlab-ci/before-release.yml
@@ -37,6 +38,7 @@ release:
   when: manual
 
 after-release-scripts:
+  stage: after-release-scripts
   # trigger:
   #   include: 
   #   - local: packages/native-modules-prebuilds-creator/.gitlab-ci/after-release.yml
