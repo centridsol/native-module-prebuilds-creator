@@ -3,8 +3,8 @@ import { PrebuildsPatcher } from "@centrid/native-modules-prebuilds-patcher";
 import path from "path"
 import yargs  from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { SharedHelpers } from '../../../Shared/Utilities/Helpers'
 import { IPactherOptions } from "@centrid/native-modules-prebuilds-patcher/src/IPrebuildsPatcher";
+import { Helpers } from "./Utilities/Helpers";
 
 
 
@@ -42,7 +42,7 @@ const allOptions:any[] = [
             if (argv.t.includes(",")){
                 throw new Error(`Can only select on target`)
             }
-            return SharedHelpers.CLIVersionItemValidator(argv.t, true, "target")
+            return Helpers.CLIVersionItemValidator(argv.t, true, "target")
         }
     },
     {
@@ -55,7 +55,7 @@ const allOptions:any[] = [
         },
         supports: ["patchSpecific"],
         check:(argv:any)=>{
-            return SharedHelpers.CLIVersionItemValidator(argv.t, true, "package")
+            return Helpers.CLIVersionItemValidator(argv.t, true, "package")
         }
     },
     {

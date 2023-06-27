@@ -16,11 +16,11 @@
     "strictNullChecks": false,
     "noUnusedLocals": false,
     "sourceMap": false,
-    "baseUrl": ".",
+    "rootDir": ".",
     "downlevelIteration": true,
     "outDir": "./dist",
   },
-  "include": ["./src/", "./type.d.ts", "./../../Shared"],
+  "include": ["./src/", "./type.d.ts"],
   "ts-node": {
     "files": true
   },

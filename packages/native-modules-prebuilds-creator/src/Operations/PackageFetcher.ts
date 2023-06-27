@@ -5,7 +5,6 @@ import decompress from "decompress"
 import { Consts } from "../Utilities/Consts"
 import { Helpers } from "../Utilities/Helpers"
 import { IPackageItem, IPackageItemsToProcess } from "../IPrebuildsCreator"
-import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
 
 
 export class PackageFetcher{
@@ -18,7 +17,7 @@ export class PackageFetcher{
         this.tempOutDir = path.join(os.tmpdir(), Consts.TEMP_DIR_NAME)
         this.tempDowloadFolder = path.join(this.tempOutDir, "download")
         this.tempExtractFolder = path.join(this.tempOutDir, "extract")
-        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.FETECHER)
+        this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.FETECHER)
         this.logger.info(`Using temp directory '${this.tempOutDir}'`)
     }
 

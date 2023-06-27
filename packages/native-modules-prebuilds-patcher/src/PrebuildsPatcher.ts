@@ -9,7 +9,7 @@ import { Consts } from "./Utilities/Consts";
 import { rimrafSync } from "rimraf";
 import os from "os"
 import lodash from "lodash";
-import { SharedHelpers } from "../../../Shared/Utilities/Helpers";
+import { Helpers } from "./Utilities/Helpers";
 
 
 export class PrebuildsPatcher{
@@ -24,7 +24,7 @@ export class PrebuildsPatcher{
         this.prebuildsFolder = path.dirname(prebuildsPath)
         this.patcherOptions = {onNoPrebuildsFound: 'skip', ...patcherOptions}
         this.projectDir = patcherOptions.projectPath || this.TryGetProjectPath()
-        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.MAIN)
+        this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.MAIN)
     }
 
     UpdatePatcherOptions(patcherOptions:IPactherOptions){

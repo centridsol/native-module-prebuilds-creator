@@ -3,8 +3,8 @@ import fsExtra from "fs-extra"
 import path from "path"
 import mergedirs from "merge-dirs"
 import lodash from "lodash"
-import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
 import { Consts } from "../Utilities/Consts"
+import { Helpers } from "../Utilities/Helpers"
 export class PreBuildsCopier{
 
     static PREBUILD_MANIFEST_FILENAME = "prebuild-manifest.json"
@@ -17,7 +17,7 @@ export class PreBuildsCopier{
     constructor(packagesToCopy:IPackageItemsToProcess){
         this.packagesToCopy = packagesToCopy
         this.manifetsDetails = {}
-        this.logger= SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.COPIER)
+        this.logger= Helpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.COPIER)
     }
 
     UpdatePrebuildManifest(packageItem:IPackageItem, prebuildPath:string){

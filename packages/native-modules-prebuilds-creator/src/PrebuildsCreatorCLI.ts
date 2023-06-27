@@ -2,7 +2,7 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { PrebuildsCreator } from "./PrebuildsCreator"
-import { SharedHelpers } from '../../../Shared/Utilities/Helpers'
+import { Helpers } from './Utilities/Helpers'
 
 const parsedArgs:any = yargs(hideBin(process.argv)).option('packages', {
     alias: 'p',
@@ -10,7 +10,7 @@ const parsedArgs:any = yargs(hideBin(process.argv)).option('packages', {
     description: 'Comma separated native node packages you want to create prebuilds for. eg "mynativemodule1@1.0.0,mynativemodule@2.0.0" ',
     required: true
 }).check((argv:any)=>{
-    return SharedHelpers.CLIVersionItemValidator(argv.p, false, "package")
+    return Helpers.CLIVersionItemValidator(argv.p, false, "package")
 }).option('arch', {
     alias: 'a',
     type: 'string',
@@ -27,7 +27,7 @@ const parsedArgs:any = yargs(hideBin(process.argv)).option('packages', {
     description: 'One or more targets. e.g "node@20.0.0,electron@25.0.0"',
     required: true
 }).check((argv:any)=>{
-    return SharedHelpers.CLIVersionItemValidator(argv.t, true, "target")
+    return Helpers.CLIVersionItemValidator(argv.t, true, "target")
 }).option('out', {
     alias: 'o',
     type: 'string',

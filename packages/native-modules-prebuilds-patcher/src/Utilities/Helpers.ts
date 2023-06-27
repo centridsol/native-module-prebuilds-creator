@@ -2,7 +2,7 @@
 import logger from "npmlog"
 import semver from 'semver'
 
-export class SharedHelpers{
+export class Helpers{
     
     static GetLoggger(prefix:string){
         return new Proxy(logger, {

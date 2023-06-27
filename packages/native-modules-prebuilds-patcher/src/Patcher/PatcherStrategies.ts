@@ -4,8 +4,8 @@ import path from "path"
 import mergedirs from "merge-dirs"
 import spawn from "cross-spawn";
 import { TryGetBindingPath } from "../Utilities/Bindings";
-import { SharedHelpers } from "../../../../Shared/Utilities/Helpers";
 import { Consts } from "../Utilities/Consts";
+import { Helpers } from "../Utilities/Helpers";
 
 abstract class PatcherStrategyBase implements IPatchStrategies{
 
@@ -15,7 +15,7 @@ abstract class PatcherStrategyBase implements IPatchStrategies{
     protected canPatch:boolean
     protected logger:any
 
-    constructor(nativeModule:INativeModuleToPatchDetails, patcherOptions:IPactherOptions, logger:any=SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.PACTHER)){
+    constructor(nativeModule:INativeModuleToPatchDetails, patcherOptions:IPactherOptions, logger:any=Helpers.GetLoggger(Consts.LOGGER_NAMES.PACTHER)){
         this.nativeModule = nativeModule
         this.packageJson =  JSON.parse(fsExtra.readFileSync(path.join(nativeModule.path, "package.json")).toString())
         this.patcherOptions = patcherOptions

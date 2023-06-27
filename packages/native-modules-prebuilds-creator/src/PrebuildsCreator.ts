@@ -1,11 +1,11 @@
 
-import { SharedHelpers } from "../../../Shared/Utilities/Helpers"
 import { IPackageItemsToProcess, IPackagesToProcess, IPreBuildifyOptions } from "./IPrebuildsCreator"
 import { PackageFetcher } from "./Operations/PackageFetcher"
 import { PreBuildifyBuilder } from "./Operations/PreBuildifyBuilder"
 import { PreBuildsCopier } from "./Operations/PreBuildsCopier"
 import { PackageItem } from "./PackageItem"
 import {Consts} from "./Utilities/Consts"
+import { Helpers } from "./Utilities/Helpers"
 
 export class PrebuildsCreator{
     private gloablPrebuildifyOpts:any={}
@@ -14,7 +14,7 @@ export class PrebuildsCreator{
     private logger:any
     
     constructor(gloablPrebuildifyOpts:IPreBuildifyOptions, packageToProcess:IPackagesToProcess, distFolder:string=null){
-        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.MAIN)
+        this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.MAIN)
         this.gloablPrebuildifyOpts =  this.SetDefaults(gloablPrebuildifyOpts)
         this.distFolder = distFolder ? distFolder : process.cwd()
         this.LoadPackagesToProcess(packageToProcess)

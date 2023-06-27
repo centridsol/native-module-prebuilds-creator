@@ -4,8 +4,8 @@ import nodeAbi, { Target } from 'node-abi'
 import semver from 'semver'
 import path from 'path'
 import fs from 'fs'
-import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
 import { Consts } from "../Utilities/Consts"
+import { Helpers } from "../Utilities/Helpers"
 import lodash from "lodash"
 import os from "os"
 export class Prebuilder{
@@ -16,7 +16,7 @@ export class Prebuilder{
     constructor(packageToProcess: IPackageItem){
         this.packageToProcess = packageToProcess
         this.availableNodeApiTarget = nodeAbi.supportedTargets.slice(0)
-        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.BUILDER)
+        this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.BUILDER)
     }
 
     Prepare(){
@@ -184,7 +184,7 @@ export class PreBuildifyBuilder{
 
     constructor(packagesToProcess:IPackageItemsToProcess){
         this.packagesToProcess = packagesToProcess
-        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.BUILDER)
+        this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.OPARATORS.BUILDER)
     }
 
     async BuildAll(){

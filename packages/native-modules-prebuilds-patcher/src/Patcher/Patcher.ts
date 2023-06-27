@@ -4,7 +4,7 @@ import fsExtra from "fs-extra"
 import os from "os"
 import path from "path"
 import { Consts } from "../Utilities/Consts"
-import { SharedHelpers } from "../../../../Shared/Utilities/Helpers"
+import { Helpers } from "../Utilities/Helpers"
 
 export class Patcher{
 
@@ -27,7 +27,7 @@ export class Patcher{
         }
         this.backUpPath = path.join(os.tmpdir(), Consts.BACKUP_DIR_NAME)
         this.backUpHash = (+new Date).toString(36)
-        this.logger = SharedHelpers.GetLoggger(Consts.LOGGER_NAMES.PACTHER)
+        this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.PACTHER)
     }
 
     Patch(nativeModuleToPatch:INativeModuleToPatch){

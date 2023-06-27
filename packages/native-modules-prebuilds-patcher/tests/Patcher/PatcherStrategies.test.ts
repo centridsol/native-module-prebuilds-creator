@@ -1,4 +1,4 @@
-import { INativeModuleToPatchDetails, IPatchStrategies } from "../../src/IPrebuildsPatcher"
+import { INativeModuleToPatchDetails } from "../../src/IPrebuildsPatcher"
 import { BuiltPatcherStratgey, PrebuildifyPatcherStratgey, UnbuiltPatcherStratgey } from "../../src/Patcher/PatcherStrategies"
 import { PatcherTestHelper } from "../Test.Utilities/PatcherTestHelper"
 import nodeAbi from 'node-abi'
