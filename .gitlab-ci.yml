@@ -22,7 +22,7 @@ before-release-scripts:
   #   strategy: depend
   trigger:
     include: 
-    - local: packages/native-modules-prebuilds-creator/.gitlab-ci/before-release.yml
+    - local: packages/native-modules-prebuilds-patcher/.gitlab-ci/before-release.yml
     strategy: depend
 
 
@@ -45,7 +45,7 @@ after-release-scripts:
   #   strategy: depend
   trigger:
     include: 
-    - local: packages/native-modules-prebuilds-creator/.gitlab-ci/after-release.yml
+    - local: packages/native-modules-prebuilds-patcher/.gitlab-ci/after-release.yml
     strategy: depend
   needs: 
   - job: release
