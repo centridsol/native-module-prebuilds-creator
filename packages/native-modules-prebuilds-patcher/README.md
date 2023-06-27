@@ -1,6 +1,8 @@
 # Native Module Prebuilds Patcher
 ### Main package for patching native module prebuilds created by the Native Module Prebuilds Creator
 
+**Please Note**: This project is maintained on [gitlab.com](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-patcher)
+
 Please see the [home](https://gitlab.com/centridpub/native-module-prebuilds-creator) page to get a fuller picture of this package.
 
 **Important Note:** In most cases, you do not need to use the package directly as it is bundled with the generated prebuilds folder created using the [Native Module Prebuild Creator](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-creator). It wraps the appropriate `prebuild-manifest.json` files, exposes a CLI interface, and unless there is a specific reason, it is recommended to use that one instead.

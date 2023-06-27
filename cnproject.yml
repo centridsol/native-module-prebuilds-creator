@@ -39,7 +39,7 @@ next:
   releaseDescription: ''
   features: []
   bugFixes: []
-  improvements: []
+  improvements: ["Updating home page url"]
   documentation: []
   knownIssues: []
 packageable: true

@@ -1,6 +1,8 @@
 # Native Module Prebuilds Creator
 ### Main package for creating prebuilds for multiple native modules.
 
+**Please Note**: This project is maintained on [gitlab.com](https://gitlab.com/centridpub/native-module-prebuilds-creator/-/tree/master/packages/native-modules-prebuilds-creator)
+
 Please see [home](https://gitlab.com/centridpub/native-module-prebuilds-creator) to get a fuller picture of this package.
 
 ## Installation
