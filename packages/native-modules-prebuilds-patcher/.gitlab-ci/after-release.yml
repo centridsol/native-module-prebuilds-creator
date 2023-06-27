@@ -29,7 +29,6 @@ build:
   stage: build
   extends: .base_npm_build
   needs: 
-  - job: test
   - job: prepare
     artifacts: true
   script:
