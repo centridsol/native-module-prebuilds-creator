@@ -1,7 +1,7 @@
 # Native Module Prebuilds Creator
 #### Create prebuilds for multiple native Node.js modules
 
-**Please Notes**: This project is maintained on [gitlab.com](https://gitlab.com/centridpub/native-module-prebuilds-creator)
+**Please Note**: This project is maintained on [gitlab.com](https://gitlab.com/centridpub/native-module-prebuilds-creator)
 
 [![BuildStatus](https://gitlab.com/centridpub/native-module-prebuilds-creator/badges/master/pipeline.svg?ignore_skipped=true)
 
