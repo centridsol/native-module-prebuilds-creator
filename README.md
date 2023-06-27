@@ -3,7 +3,7 @@
 
 **Please Note**: This project is maintained on [gitlab.com](https://gitlab.com/centridpub/native-module-prebuilds-creator)
 
-[![BuildStatus](https://gitlab.com/centridpub/native-module-prebuilds-creator/badges/master/pipeline.svg?ignore_skipped=true)
+![BuildStatus](https://gitlab.com/centridpub/native-module-prebuilds-creator/badges/master/pipeline.svg?ignore_skipped=true)
 
 This package allows you to create prebuilds for multiple native Node.js modules that can be used later in your projects. It achieves this by fetching specified native modules, building them using [prebuildify](https://github.com/prebuild/prebuildify), and creating a package with all the prebuilds. Below is an example of the structure of the prebuilds package:
 
