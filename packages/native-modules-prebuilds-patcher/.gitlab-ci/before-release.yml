@@ -33,15 +33,15 @@ patcher_test:
   - yarn
   - yarn run test
   needs: 
-  - job: prepare
+  - job: patcher_prepare
     artifacts: true
 
 patcher_build:
   stage: build
   extends: .base_npm_build
   needs: 
-  - job: test
-  - job: prepare
+  - job: patcher_test
+  - job: patcher_prepare
     artifacts: true
   script:
     - yarn

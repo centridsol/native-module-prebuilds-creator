@@ -32,7 +32,7 @@ creator_build:
   stage: build
   extends: .base_npm_build
   needs: 
-  - job: prepare
+  - job: creator_prepare
     artifacts: true
   script:
     - yarn
@@ -45,9 +45,9 @@ creator_deploy-to-self-host:
   stage: deploy-to-self-host
   extends: .base_npm_package
   needs: 
-  - job: build
+  - job: creator_build
     artifacts: true
-  - job: prepare
+  - job: creator_prepare
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"
@@ -59,9 +59,9 @@ creator_deploy-to-npm:
   stage: deploy-to-npm
   extends: .base_npm_package
   needs: 
-  - job: build
+  - job: creator_build
     artifacts: true
-  - job: prepare
+  - job: creator_prepare
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "false"
