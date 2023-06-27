@@ -38,7 +38,7 @@ projectPaths:
 next:
   releaseDescription: ''
   features: []
-  bugFixes: []
+  bugFixes: ["Linking bin directory correctly", "Updating CI to deploy correct version number"]
   improvements: []
   documentation: []
   knownIssues: []
