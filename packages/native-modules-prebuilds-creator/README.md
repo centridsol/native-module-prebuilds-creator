@@ -23,6 +23,10 @@ This package can be used through its CLI interface or through its programmatic A
 
 ### CLI Usage
 
+```shell
+npx prebuilds-creator <options>
+```
+
 | CLI | Default | Description | Example | |
 | --- | --- | --- | --- | --- |
 | --packages | - | Native node packages you want to create prebuilds for | `--packages "drivelist@9.2.4,msgpackr-extract@3.0.2,native-keymap@2.5.0"` | |

@@ -1,7 +1,9 @@
 {
     "name": "@centrid/native-modules-prebuilds-creator",
     "main": "./src/PrebuildsCreator",
-    "bin": "./src/PrebuildsCreatorCLI",
+    "bin": {
+        "prebuilds-creator": "./src/PrebuildsCreatorCLI.js"
+    },
     "version": "1.2.2",
     "cnversion": "1.2.2.122755448",
     "description": "Main package for creating prebuilds for multiple native modules.",
