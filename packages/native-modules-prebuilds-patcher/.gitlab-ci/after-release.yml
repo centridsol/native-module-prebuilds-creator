@@ -15,7 +15,7 @@ stages:
 - deploy-to-self-host
 - deploy-to-npm
 
-prepare:
+patcher_prepare:
   stage: prepare
   extends: .monorepo_prepare
   artifacts:
@@ -28,7 +28,7 @@ prepare:
     reports:
       dotenv: ${SUBPATH}/build.env
 
-build:
+patcher_build:
   stage: build
   extends: .base_npm_build
   needs: 
@@ -41,7 +41,7 @@ build:
     paths: 
     - ${SUBPATH}/dist/
 
-deploy-to-self-host:
+patcher_deploy-to-self-host:
   stage: deploy-to-self-host
   extends: .base_npm_package
   needs: 
@@ -55,7 +55,7 @@ deploy-to-self-host:
     PATH_TO_USE: ./dist
   when: manual
 
-deploy-to-npm:
+patcher_deploy-to-npm:
   stage: deploy-to-npm
   extends: .base_npm_package
   needs: 
