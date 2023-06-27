@@ -1,7 +1,6 @@
 before_script:
 - cd packages/native-modules-prebuilds-patcher
 
-
 include:
 - project: centrid/packagerepositry
   ref: master
@@ -11,8 +10,6 @@ stages:
 - prepare
 - test
 - build
-- deploy-to-self-host
-- deploy-to-npm
 
 prepare:
   stage: prepare
@@ -30,9 +27,8 @@ prepare:
 test:
   stage: test
   script: 
-  - echo test
-  # - yarn
-  # - yarn run test
+  - yarn
+  - yarn run test
   needs: 
   - job: prepare
     artifacts: true
@@ -47,35 +43,4 @@ build:
   script:
     - yarn
     - yarn run build
-  artifacts:
-    paths: 
-    - packages/native-modules-prebuilds-patcher/dist/
 
-deploy-to-self-host:
-  stage: deploy-to-self-host
-  extends: .base_npm_package
-  needs: 
-  - job: build
-    artifacts: true
-  - job: prepare
-    artifacts: true
-  variables:
-    DEPLOY_TO_SELF_HOST: "true"
-    DEPLOY_TO_NPM: "false"
-    PATH_TO_USE: ./dist
-  when: manual
-
-
-deploy-to-npm:
-  stage: deploy-to-npm
-  extends: .base_npm_package
-  needs: 
-  - job: build
-    artifacts: true
-  - job: prepare
-    artifacts: true
-  variables:
-    DEPLOY_TO_SELF_HOST: "false"
-    DEPLOY_TO_NPM: "true"
-    PATH_TO_USE: ./dist
-  when: manual

@@ -38,7 +38,7 @@ projectPaths:
 next:
   releaseDescription: ''
   features: []
-  bugFixes: []
+  bugFixes: ["Gitlab fixes"]
   improvements: []
   documentation: []
   knownIssues: []
