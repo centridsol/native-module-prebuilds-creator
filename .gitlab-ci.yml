@@ -5,6 +5,7 @@ include:
 
 stages:
 # - patcher_ci
+- prepare
 - release
 
 
@@ -21,9 +22,16 @@ stages:
 #     - local: packages/native-modules-prebuilds-patcher/.gitlab-ci.yml
 #     strategy: depend
 
+
+prepare:
+  stage: prepare
+  extends: .base_npm_prepare
+
 release:
   stage: release
   script:
-  - !reference [.base_prepare, script]
   - !reference [.base_npm_release-prepare, script]
+  needs: 
+  - job: prepare
+    artifacts: true
   when: manual

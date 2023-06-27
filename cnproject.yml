@@ -37,7 +37,7 @@ projectPaths:
   tests: tests
 next:
   releaseDescription: ''
-  features: []
+  features: ["Gitlab work"]
   bugFixes: []
   improvements: []
   documentation: []
