@@ -36,7 +36,8 @@ release:
   needs: 
   - job: prepare
     artifacts: true
-  - job: before-release-scripts
+  - job: creator-before-release-scripts
+  - job: patcher-before-release-scripts
   when: manual
 
 creator-after-release-scripts:
