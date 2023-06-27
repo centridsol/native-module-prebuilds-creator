@@ -1,8 +1,8 @@
 {
     "private": true,
     "name": "@centrid/native-modules-prebuilds-creator",
-    "version": "1.2.5",
-    "cnversion": "1.2.5.264211089",
+    "version": "1.1.2",
+    "cnversion": "1.1.2.58567641",
     "description": "Package for creating prebuilds for multiple native modules",
     "keywords": [
         "prebuilt",
