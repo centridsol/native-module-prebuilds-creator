@@ -2,8 +2,8 @@
     "name": "@centrid/native-modules-prebuilds-creator",
     "main": "./src/PrebuildsCreator",
     "bin": "./src/PrebuildsCreatorCLI",
-    "version": "1.1.2",
-    "cnversion": "1.1.2.58567641",
+    "version": "1.2.2",
+    "cnversion": "1.2.2.122755448",
     "description": "Main package for creating prebuilds for multiple native modules.",
     "keywords": [
         "prebuilt",

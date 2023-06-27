@@ -25,7 +25,7 @@ versionInfo:
     requires: {}
     knownIssues: []
   minor:
-    versionNumber: 1
+    versionNumber: 2
     featureList: []
   patch:
     versionNumber: 2
@@ -37,7 +37,7 @@ projectPaths:
   tests: tests
 next:
   releaseDescription: ''
-  features: ["Setting rootDir correctly"]
+  features: []
   bugFixes: []
   improvements: []
   documentation: []
