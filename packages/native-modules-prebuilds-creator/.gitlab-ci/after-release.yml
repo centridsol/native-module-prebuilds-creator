@@ -35,6 +35,7 @@ build:
   - job: prepare
     artifacts: true
   script:
+    - npx cendevopsjs gitlabci project_info_manager update_project_file ${PROJECT_TYPE} -r ${CI_PROJECT_DIR} --commitHash $(git rev-parse --short HEAD)
     - yarn
     - yarn run build
   artifacts:
