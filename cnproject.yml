@@ -38,7 +38,7 @@ projectPaths:
 next:
   releaseDescription: ''
   features: []
-  bugFixes: []
+  bugFixes: ["Improving CI"]
   improvements: []
   documentation: []
   knownIssues: []

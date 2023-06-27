@@ -1,5 +1,8 @@
+variables:
+  SUBPATH: packages/native-modules-prebuilds-patcher
+
 before_script:
-- cd packages/native-modules-prebuilds-patcher
+- cd ${SUBPATH}
 
 include:
 - project: centrid/packagerepositry
@@ -17,12 +20,12 @@ prepare:
   artifacts:
     paths: 
     - node_modules/
-    - packages/native-modules-prebuilds-patcher/node_modules/
-    - packages/native-modules-prebuilds-patcher/.npmrc
-    - packages/native-modules-prebuilds-patcher/.accesstoken
+    - ${SUBPATH}/node_modules/
+    - ${SUBPATH}/.npmrc
+    - ${SUBPATH}/.accesstoken
     expire_in: 30 mins
     reports:
-      dotenv: packages/native-modules-prebuilds-patcher/build.env
+      dotenv: ${SUBPATH}/build.env
 
 test:
   stage: test
