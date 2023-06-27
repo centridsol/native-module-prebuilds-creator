@@ -25,10 +25,10 @@ versionInfo:
     requires: {}
     knownIssues: []
   minor:
-    versionNumber: 0
+    versionNumber: 1
     featureList: []
   patch:
-    versionNumber: 0
+    versionNumber: 2
     bugList: []
   commitHash:
     versionNumber: ''
@@ -37,9 +37,9 @@ projectPaths:
   tests: tests
 next:
   releaseDescription: ''
-  features: ["Project Resetting"]
+  features: []
   bugFixes: []
-  improvements: ["Adding badges to main readme file", "Mirroring on github.com"]
+  improvements: []
   documentation: []
   knownIssues: []
 packageable: true
