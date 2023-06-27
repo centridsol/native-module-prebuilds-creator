@@ -39,7 +39,7 @@ next:
   releaseDescription: ''
   features: ["Project Resetting"]
   bugFixes: []
-  improvements: ["Adding badges to main readme file"]
+  improvements: ["Adding badges to main readme file", "Mirroring on github.com"]
   documentation: []
   knownIssues: []
 packageable: true
