@@ -14,14 +14,19 @@ prepare:
   stage: prepare
   extends: .base_npm_prepare
 
-before-release-scripts:
+creator-before-release-scripts:
   stage: before-release-scripts
   trigger:
     include: 
     - local: packages/native-modules-prebuilds-creator/.gitlab-ci/before-release.yml
-    - local: packages/native-modules-prebuilds-patcher/.gitlab-ci/before-release.yml
     strategy: depend
 
+patcher-before-release-scripts:
+  stage: before-release-scripts
+  trigger:
+    include: 
+    - local: packages/native-modules-prebuilds-patcher/.gitlab-ci/before-release.yml
+    strategy: depend
 
 release:
   stage: release
@@ -34,11 +39,19 @@ release:
   - job: before-release-scripts
   when: manual
 
-after-release-scripts:
+creator-after-release-scripts:
   stage: after-release-scripts
   trigger:
     include: 
     - local: packages/native-modules-prebuilds-creator/.gitlab-ci/after-release.yml
+    strategy: depend
+  needs: 
+  - job: release
+
+pacther-after-release-scripts:
+  stage: after-release-scripts
+  trigger:
+    include: 
     - local: packages/native-modules-prebuilds-patcher/.gitlab-ci/after-release.yml
     strategy: depend
   needs: 

@@ -14,7 +14,7 @@ stages:
 - test
 - build
 
-patcher_prepare:
+prepare:
   stage: prepare
   extends: .monorepo_prepare
   artifacts:
@@ -27,21 +27,21 @@ patcher_prepare:
     reports:
       dotenv: ${SUBPATH}/build.env
 
-patcher_test:
+test:
   stage: test
   script: 
   - yarn
   - yarn run test
   needs: 
-  - job: patcher_prepare
+  - job: prepare
     artifacts: true
 
-patcher_build:
+build:
   stage: build
   extends: .base_npm_build
   needs: 
-  - job: patcher_test
-  - job: patcher_prepare
+  - job: test
+  - job: prepare
     artifacts: true
   script:
     - yarn

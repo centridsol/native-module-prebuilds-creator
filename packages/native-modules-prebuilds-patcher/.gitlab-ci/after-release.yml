@@ -15,7 +15,7 @@ stages:
 - deploy-to-self-host
 - deploy-to-npm
 
-patcher_prepare:
+prepare:
   stage: prepare
   extends: .monorepo_prepare
   artifacts:
@@ -28,11 +28,11 @@ patcher_prepare:
     reports:
       dotenv: ${SUBPATH}/build.env
 
-patcher_build:
+build:
   stage: build
   extends: .base_npm_build
   needs: 
-  - job: patcher_prepare
+  - job: prepare
     artifacts: true
   script:
     - yarn
@@ -41,13 +41,13 @@ patcher_build:
     paths: 
     - ${SUBPATH}/dist/
 
-patcher_deploy-to-self-host:
+deploy-to-self-host:
   stage: deploy-to-self-host
   extends: .base_npm_package
   needs: 
-  - job: patcher_build
+  - job: build
     artifacts: true
-  - job: patcher_prepare
+  - job: prepare
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "true"
@@ -55,13 +55,13 @@ patcher_deploy-to-self-host:
     PATH_TO_USE: ./dist
   when: manual
 
-patcher_deploy-to-npm:
+deploy-to-npm:
   stage: deploy-to-npm
   extends: .base_npm_package
   needs: 
-  - job: patcher_build
+  - job: build
     artifacts: true
-  - job: patcher_prepare
+  - job: prepare
     artifacts: true
   variables:
     DEPLOY_TO_SELF_HOST: "false"
