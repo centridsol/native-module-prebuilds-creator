@@ -31,6 +31,7 @@ release:
   stage: release
   script:
   - !reference [.base_npm_release-prepare, script]
+  - !reference [.base_release-upload, script]
   needs: 
   - job: prepare
     artifacts: true
