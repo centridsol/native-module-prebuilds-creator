@@ -28,7 +28,7 @@ versionInfo:
     versionNumber: 2
     featureList: []
   patch:
-    versionNumber: 4
+    versionNumber: 5
     bugList: []
   commitHash:
     versionNumber: ''
@@ -39,7 +39,7 @@ next:
   releaseDescription: ''
   features: []
   bugFixes: []
-  improvements: ["Updating home page url"]
+  improvements: []
   documentation: []
   knownIssues: []
 packageable: true
