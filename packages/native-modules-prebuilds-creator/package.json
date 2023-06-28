@@ -4,8 +4,8 @@
     "bin": {
         "prebuilds-creator": "./src/PrebuildsCreatorCLI.js"
     },
-    "version": "1.5.5",
-    "cnversion": "1.5.5.245304270",
+    "version": "1.5.7",
+    "cnversion": "1.5.7.187135134",
     "description": "Main package for creating prebuilds for multiple native modules.",
     "keywords": [
         "prebuilt",
