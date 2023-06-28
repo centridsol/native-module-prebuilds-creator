@@ -6,6 +6,7 @@ import { PreBuildsCopier } from "./Operations/PreBuildsCopier"
 import { PackageItem } from "./PackageItem"
 import {Consts} from "./Utilities/Consts"
 import { Helpers } from "./Utilities/Helpers"
+import path from "path"
 
 export class PrebuildsCreator{
     private gloablPrebuildifyOpts:any={}
@@ -16,7 +17,7 @@ export class PrebuildsCreator{
     constructor(gloablPrebuildifyOpts:IPreBuildifyOptions, packageToProcess:IPackagesToProcess, distFolder:string=null){
         this.logger = Helpers.GetLoggger(Consts.LOGGER_NAMES.MAIN)
         this.gloablPrebuildifyOpts =  this.SetDefaults(gloablPrebuildifyOpts)
-        this.distFolder = distFolder ? distFolder : process.cwd()
+        this.distFolder = distFolder ? distFolder : path.join(process.cwd(), "NMPrebuilds"),
         this.LoadPackagesToProcess(packageToProcess)
     }
 

@@ -32,7 +32,7 @@ export class PreBuildsCopier{
         }
     }
 
-    Copy(distFolder:string="./NMPrebuilds"){
+    Copy(distFolder:string){
         this.logger.info(`Copying prebuilds folders`)
         distFolder = path.isAbsolute(distFolder) ? distFolder : path.resolve(process.cwd(), distFolder)
 

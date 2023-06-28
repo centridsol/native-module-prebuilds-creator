@@ -49,7 +49,8 @@ workspaces:
     name: native-modules-prebuilds-creator
     next:
       features: []
-      bugFixes: []
+      bugFixes: ["Including prebuildify bat file for windows", 
+                 "Setting default out folder correctly"]
       improvements: []
       documentation: []
       knownIssues: []

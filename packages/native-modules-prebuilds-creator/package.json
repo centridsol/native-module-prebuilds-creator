@@ -66,7 +66,7 @@
     },
     "scripts": {
         "test": "jest --runInBand",
-        "build": "npm run package-patcher; tsc --project ./tsconfig.json; cp package.json ./dist/package.json; cp README.md ./dist/README.md; cp LICENSE.md ./dist/LICENSE.md",
+        "build": "npm run package-patcher; tsc --project ./tsconfig.json; cp ./src/Utilities/PrebuildifyWrapper/PrebuildifyWinWrapper.bat ./dist/src/Utilities/PrebuildifyWrapper/PrebuildifyWinWrapper.bat; cp package.json ./dist/package.json; cp README.md ./dist/README.md; cp LICENSE.md ./dist/LICENSE.md",
         "package-patcher": "webpack --config prebuilds-patcher.webpack.config.js"
     }
 }
