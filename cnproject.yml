@@ -28,7 +28,7 @@ versionInfo:
     versionNumber: 5
     featureList: []
   patch:
-    versionNumber: 7
+    versionNumber: 10
     bugList: []
   commitHash:
     versionNumber: ''
@@ -39,7 +39,7 @@ next:
   releaseDescription: ''
   features: []
   bugFixes: []
-  improvements: ["Updating license and readme info"]
+  improvements: []
   documentation: []
   knownIssues: []
 packageable: true
@@ -49,7 +49,7 @@ workspaces:
     name: native-modules-prebuilds-creator
     next:
       features: []
-      bugFixes: ["Small fix to the prebuilds generation logic"]
+      bugFixes: []
       improvements: []
       documentation: []
       knownIssues: []
@@ -57,7 +57,7 @@ workspaces:
     name: native-modules-prebuilds-patcher
     next:
       features: []
-      bugFixes: ["Small fix to the revering logic"]
+      bugFixes: []
       improvements: []
       documentation: []
       knownIssues: []

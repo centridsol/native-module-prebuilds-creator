@@ -1,8 +1,8 @@
 {
     "private": true,
     "name": "@centrid/native-modules-prebuilds-creator",
-    "version": "1.5.7",
-    "cnversion": "1.5.7.187135134",
+    "version": "1.5.10",
+    "cnversion": "1.5.10.161359725",
     "description": "Package for creating prebuilds for multiple native modules",
     "keywords": [
         "prebuilt",
@@ -27,6 +27,6 @@
         "packages/*"
     ],
     "devDependencies": {
-        "@centrid/cendevops": "^3.6.14"
+        "@centrid/cendevops": "^3.7.16"
     }
 }
