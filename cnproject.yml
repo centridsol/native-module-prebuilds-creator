@@ -28,7 +28,7 @@ versionInfo:
     versionNumber: 5
     featureList: []
   patch:
-    versionNumber: 5
+    versionNumber: 7
     bugList: []
   commitHash:
     versionNumber: ''
@@ -49,8 +49,7 @@ workspaces:
     name: native-modules-prebuilds-creator
     next:
       features: []
-      bugFixes: ["Including prebuildify bat file for windows", 
-                 "Setting default out folder correctly"]
+      bugFixes: []
       improvements: []
       documentation: []
       knownIssues: []
