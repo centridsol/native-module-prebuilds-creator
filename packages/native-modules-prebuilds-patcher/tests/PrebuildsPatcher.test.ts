@@ -39,7 +39,7 @@ describe("Prebuilds patcher tests", () => {
             const initalPatchHash = TestHelper.GenerateFolderHashSync(packagePath)
             
             mockPrebuildInstance.SetProjectPath(TestHelper.GetTestTempDir("randomPath"))
-            mockPrebuildInstance.RevertPatchs()
+            await mockPrebuildInstance.RevertPatches()
 
             expect(fs.existsSync(path.join(packagePath, Consts.BACKUP_JSON_NAME))).toBeTruthy()
             expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)
@@ -54,7 +54,7 @@ describe("Prebuilds patcher tests", () => {
                 name: "test-m1",
                 version: "2.0.0"
             }))
-            mockPrebuildInstance.RevertPatchs()
+            await mockPrebuildInstance.RevertPatches()
 
             expect(fs.existsSync(path.join(packagePath, Consts.BACKUP_JSON_NAME))).toBeTruthy()
         })
@@ -77,7 +77,7 @@ describe("Prebuilds patcher tests", () => {
             const initalPatchHash = TestHelper.GenerateFolderHashSync(packagePath)
 
             await mockPrebuildInstance.Patch(["test-m1@1.0.0"],"x64", "win32", "electron@25.0.0")
-            mockPrebuildInstance.RevertPatchs()
+            await mockPrebuildInstance.RevertPatches()
 
             expect(fs.existsSync(path.join(PatcherTestHelper.GetMockNodeModuleDir(), "test-m1", Consts.BACKUP_JSON_NAME))).toBeFalsy()
             expect(TestHelper.GenerateFolderHashSync(packagePath)).toEqual(initalPatchHash)

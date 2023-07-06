@@ -85,13 +85,9 @@ const prebuilder = new PrebuildsCreator(
   ],
   /* dist: string */
   path.join(__dirname, "myGeneratedPrebuilds")
-).Create();
+);
 
-prebuilder
-  .Create()
-  .then(()
-
- => {
+prebuilder.Create().then(() => {
     console.log("done");
   })
   .catch((err) => {

@@ -55,7 +55,7 @@ export class PrebuildsPatcher{
         this.projectDir = projectDir
     }
 
-    RevertPatchs(){
+    async RevertPatches(){
         const backUpDir = path.join(os.tmpdir(), Consts.BACKUP_DIR_NAME)
         if (!fsExtra.existsSync(backUpDir)){
             return
@@ -157,14 +157,13 @@ export class PrebuildsPatcher{
         }))
     }
 
-    private DoPatch(packages:any): Promise<any>{
+    private async DoPatch(packages:any): Promise<any>{
         try{
             new Patcher(this.patcherOptions).Patch(packages)
-            return Promise.resolve()
         }
         catch(err:any){
-            this.RevertPatchs()
-            return Promise.reject(err)
+            await this.RevertPatches()
+            throw err
         }
         
     }
@@ -196,13 +195,13 @@ export class PrebuildsPatcher{
             return pv
         }, {})
 
-        return this.DoPatch(this.ValaidateAndGetNativeModulesToPatch(nativeModulesToPatch, arch, platform, runtime))
+        return await this.DoPatch(this.ValaidateAndGetNativeModulesToPatch(nativeModulesToPatch, arch, platform, runtime))
         
     }
 
     async PatchAll(arch:any, platform:any, runtime:any){        
         const prebuildsAvailable = this.ValaidateAndGetNativeModulesToPatch(this.GetProjectNativeModules(), arch, platform, runtime)
-        return this.DoPatch(prebuildsAvailable)
+        return await this.DoPatch(prebuildsAvailable)
     }
 
     private GetProjectNativeModules(projectPath:string=this.projectDir, filter:(moduleName: string, realPath:string) => boolean = null): INativeModuleToPatch{

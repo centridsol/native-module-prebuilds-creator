@@ -60,7 +60,7 @@ export class PreBuildsCopier{
 
         this.logger.info(`Generating prebuilds manifest files`)
         fsExtra.writeFileSync(prebuildManifestPath, JSON.stringify(this.manifetsDetails, null, 4) )
-        fsExtra.writeFileSync(path.join(distFolder, "package.js"), JSON.stringify({
+        fsExtra.writeFileSync(path.join(distFolder, "package.json"), JSON.stringify({
             private: true,
             main: `./${PreBuildsCopier.PACTCHER_FILENAME}`,
             bin: `./${PreBuildsCopier.PACTCHER_FILENAME}`
